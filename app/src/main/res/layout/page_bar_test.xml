@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.payam1991gr.chart.tool.ChartView
+        android:id="@+id/chart"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="Bar Test"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText" />
+
+    <View
+        android:id="@+id/space0"
+        android:layout_width="0dp"
+        android:layout_height="1dip"
+        app:layout_constraintBottom_toBottomOf="@+id/cornerRadiusSwitch"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintLeft_toRightOf="@+id/cornerRadiusSwitch"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/cornerRadiusSwitch" />
+
+    <Switch
+        android:id="@+id/cornerRadiusSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintLeft_toRightOf="@+id/cornerRadiusLabel"
+        app:layout_constraintRight_toLeftOf="@+id/space0"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/cornerRadiusLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="4dp"
+        android:text="Corner Radius"
+        app:layout_constraintBottom_toBottomOf="@+id/cornerRadiusSwitch"
+        app:layout_constraintLeft_toRightOf="@+id/space1"
+        app:layout_constraintRight_toLeftOf="@+id/cornerRadiusSwitch"
+        app:layout_constraintTop_toTopOf="@+id/cornerRadiusSwitch"
+        tools:ignore="HardcodedText" />
+
+    <View
+        android:id="@+id/space1"
+        android:layout_width="0dp"
+        android:layout_height="1dip"
+        app:layout_constraintBottom_toBottomOf="@+id/cornerRadiusSwitch"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintLeft_toRightOf="@+id/rotateSwitch"
+        app:layout_constraintRight_toLeftOf="@+id/cornerRadiusLabel"
+        app:layout_constraintTop_toTopOf="@+id/cornerRadiusSwitch" />
+
+    <Switch
+        android:id="@+id/rotateSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/cornerRadiusSwitch"
+        app:layout_constraintLeft_toRightOf="@+id/rotateLabel"
+        app:layout_constraintRight_toLeftOf="@+id/space1"
+        app:layout_constraintTop_toTopOf="@+id/cornerRadiusSwitch" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/rotateLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="4dp"
+        android:text="Rotate"
+        app:layout_constraintBottom_toBottomOf="@+id/rotateSwitch"
+        app:layout_constraintLeft_toRightOf="@+id/space2"
+        app:layout_constraintRight_toLeftOf="@+id/rotateSwitch"
+        app:layout_constraintTop_toTopOf="@+id/rotateSwitch"
+        tools:ignore="HardcodedText" />
+
+    <View
+        android:id="@+id/space2"
+        android:layout_width="0dp"
+        android:layout_height="1dip"
+        app:layout_constraintBottom_toBottomOf="@+id/rotateSwitch"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintLeft_toRightOf="@+id/qualitySwitch"
+        app:layout_constraintRight_toLeftOf="@+id/rotateLabel"
+        app:layout_constraintTop_toTopOf="@+id/rotateSwitch" />
+
+    <Switch
+        android:id="@+id/qualitySwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/cornerRadiusSwitch"
+        app:layout_constraintLeft_toRightOf="@+id/qualityLabel"
+        app:layout_constraintRight_toLeftOf="@+id/space2"
+        app:layout_constraintTop_toTopOf="@+id/cornerRadiusSwitch" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/qualityLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="4dp"
+        android:text="Quality"
+        app:layout_constraintBottom_toBottomOf="@+id/qualitySwitch"
+        app:layout_constraintLeft_toRightOf="@+id/space3"
+        app:layout_constraintRight_toLeftOf="@+id/qualitySwitch"
+        app:layout_constraintTop_toTopOf="@+id/qualitySwitch"
+        tools:ignore="HardcodedText" />
+
+    <View
+        android:id="@+id/space3"
+        android:layout_width="0dp"
+        android:layout_height="1dip"
+        app:layout_constraintBottom_toBottomOf="@+id/qualitySwitch"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/qualityLabel"
+        app:layout_constraintTop_toTopOf="@+id/qualitySwitch" />
+</androidx.constraintlayout.widget.ConstraintLayout>
