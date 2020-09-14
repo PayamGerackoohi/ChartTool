@@ -74,7 +74,7 @@ class Arc(private val parent: IShapeParent) : BaseShape(parent) {
         a *= (endDegree - startDegree) / 90f
         round(a).toInt().let {
             vertexCount = if (it < 3) 3 else it
-            if (BaseRenderer.HighQuality)
+            if (parent.highQuality())
                 vertexCount *= 2
         }
     }

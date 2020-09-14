@@ -7,11 +7,25 @@ import android.content.Context
 import android.content.res.Resources
 import android.util.TypedValue
 
+@Suppress("unused")
 class DisplayUtils {
     companion object {
-        fun convertDpToPixel(dp: Int): Int {
+        fun convertDpToPixel(dp: Float): Int {
             val displayMetrics = Resources.getSystem().displayMetrics
-            return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(), displayMetrics).toInt()
+            return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, displayMetrics).toInt()
+        }
+
+        fun convertDpToPixel(dp: Int): Int {
+            return convertDpToPixel(dp.toFloat())
+        }
+
+        fun convertSpToPixel(sp: Float): Int {
+            val displayMetrics = Resources.getSystem().displayMetrics
+            return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, displayMetrics).toInt()
+        }
+
+        fun convertSpToPixel(sp: Int): Int {
+            return convertSpToPixel(sp.toFloat())
         }
 
         fun getWidth(context: Context): Int {

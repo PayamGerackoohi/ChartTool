@@ -88,10 +88,12 @@ class ChartTestRenderer(private val parent: IRendererParent) : BaseRenderer(), G
         bar1.apply(PointF(start.x + dx, start.y + dy), PointF(end.x - dx, end.y - dy), scale, color)
     }
 
-    fun setHighQuality(highQuality: Boolean = false) {
-        HighQuality = highQuality
+    fun highQuality(highQuality: Boolean = false) {
+        this.highQuality = highQuality
         bar1.refresh()
     }
 
     override fun getShaderCode(shaderRes: Int): String = parent.getShaderCode(shaderRes)
+
+    override fun highQuality(): Boolean = highQuality
 }

@@ -10,9 +10,13 @@ data class GLColor(val r: Float, val g: Float, val b: Float, val a: Float) {
         val Green = GLColor(0f, 1f, 0f, 1f)
         val Blue = GLColor(0f, 0f, 1f, 1f)
         val Gray = GLColor(.27f, .27f, .27f, 1f)
+        val LightGray = GLColor(0.588f, 0.588f, 0.588f, 1f)
         fun from(color: Int): GLColor =
             GLColor(Color.red(color) / 255f, Color.green(color) / 255f, Color.blue(color) / 255f, Color.alpha(color) / 255f)
     }
 
     fun toArray(): FloatArray = floatArrayOf(r, g, b, a)
+    fun toColor(): Int {
+        return Color.argb((a * 255f).toInt(), (r * 255f).toInt(), (g * 255f).toInt(), (b * 255f).toInt())
+    }
 }

@@ -73,7 +73,7 @@ class Rectangle(parent: IShapeParent) : BaseShape(parent) {
             rectangleCoords = floatArrayOf()
             vertexBuffer = floatBufferOf()
             drawListBuffer = shortBufferOf()
-            plog("Invalid points: start", start, "end", end)
+//            plog("Invalid points: start", start, "end", end)
         }
     }
 

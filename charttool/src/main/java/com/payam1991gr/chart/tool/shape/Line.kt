@@ -43,7 +43,7 @@ class Line(parent: IShapeParent) : BaseShape(parent) {
         } else {
             coords = floatArrayOf()
             vertexBuffer = floatBufferOf()
-            plog("Invalid points: start", start, "end", end)
+//            plog("Invalid points: start", start, "end", end)
         }
     }
 

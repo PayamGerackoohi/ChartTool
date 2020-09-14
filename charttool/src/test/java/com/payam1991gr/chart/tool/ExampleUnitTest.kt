@@ -1,5 +1,6 @@
 package com.payam1991gr.chart.tool
 
+import com.payam1991gr.chart.tool.util.plog
 import org.junit.Test
 
 import org.junit.Assert.*

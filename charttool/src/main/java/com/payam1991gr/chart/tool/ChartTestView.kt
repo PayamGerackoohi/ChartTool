@@ -81,7 +81,7 @@ class ChartTestView @JvmOverloads constructor(context: Context? = null, attrs: A
     }
 
     fun setHighQuality(highQuality: Boolean) {
-        renderer.setHighQuality(highQuality)
+        renderer.highQuality(highQuality)
         requestRender()
     }
 

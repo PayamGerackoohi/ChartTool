@@ -1,12 +1,15 @@
 package com.payam1991gr.chart.tool
 
 import android.content.Context
+import android.graphics.Typeface
 import android.opengl.GLSurfaceView
 import android.os.Handler
 import android.util.AttributeSet
 import androidx.annotation.RawRes
 import androidx.core.content.ContextCompat
 import com.payam1991gr.chart.tool.data.CTData
+import com.payam1991gr.chart.tool.data.CT_Unit
+import com.payam1991gr.chart.tool.data.ILegendParent
 import com.payam1991gr.chart.tool.renderer.ChartRenderer
 import com.payam1991gr.chart.tool.util.DisplayUtils
 import com.payam1991gr.chart.tool.util.getRawResString
@@ -15,21 +18,29 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
-class ChartView @JvmOverloads constructor(context: Context? = null, attrs: AttributeSet? = null) : GLSurfaceView(context, attrs), IRendererParent {
+class ChartView : GLSurfaceView, IRendererParent, ILegendParent {
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
+
     companion object {
         //        private const val ROTATION_TOUCH_SCALE_FACTOR: Float = 0.0625f
 //        private const val ANIMATION_DURATION = 500L
-        private const val ANIMATION_DURATION = 250L
+        private const val ANIMATION_DURATION = 200L
+//        private const val ANIMATION_DURATION = 250L
     }
     //    private var previousX: Float = 0f
 //    private var previousY: Float = 0f
 //    private var cornerRadius = false
 
     private var dataList = ArrayList<CTData>()
-    private var categories = ArrayList<String>()
-
     private val renderer: ChartRenderer
     private var animating = false
+    private var legendView: ChartLegend? = null
+    private var categoryView: ChartCategory? = null
+    private var labelView: ChartLabel? = null
+    private var rtl = false
+    private var typeface: Typeface? = null
+    private var fontSize: Int? = null
 
     init {
         setEGLContextClientVersion(2)
@@ -39,8 +50,6 @@ class ChartView @JvmOverloads constructor(context: Context? = null, attrs: Attri
         setOnClickListener { animateChart() }
     }
 
-    override fun getShaderCode(@RawRes shaderRes: Int): String = context.getRawResString(shaderRes)
-
     fun data(vararg data: CTData): ChartView {
         this.dataList.apply {
             clear()
@@ -49,11 +58,8 @@ class ChartView @JvmOverloads constructor(context: Context? = null, attrs: Attri
         return this
     }
 
-    fun categories(categories: List<String>): ChartView {
-        this.categories.apply {
-            clear()
-            addAll(categories)
-        }
+    fun categories(list: List<String>): ChartView {
+        categoryView?.setCategories(list)
         return this
     }
 
@@ -70,23 +76,29 @@ class ChartView @JvmOverloads constructor(context: Context? = null, attrs: Attri
                 startPlot()
             else
                 getHeightLazy()
-        }, 100)
+        }, 50)
     }
 
     private fun startPlot() {
+        renderer.width = width
+        renderer.height = height
         gatherResources()
-        drawLegends()
-        drawLabels()
         drawBaseLine()
-        drawValueBar()
+        // todo: drawValueBar()
         drawBars()
     }
 
     private fun gatherResources() {
+        val legends = ArrayList<String>()
+        val legendColors = ArrayList<Int>()
         dataList.forEach { data ->
             data.nameId?.let { data.name(context.getString(it)) }
             data.colorId?.let { data.color(ContextCompat.getColor(context, it)) }
+            labelView?.setLabels(data.labels)
+            legends.add(data.name)
+            legendColors.add(data.color.toColor())
         }
+        legendView?.setLegends(this, legends, legendColors)
     }
 
     private fun drawBars() {
@@ -96,10 +108,6 @@ class ChartView @JvmOverloads constructor(context: Context? = null, attrs: Attri
             Thread.sleep(500)
             animateChart()
         }
-    }
-
-    private fun drawValueBar() {
-//        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     private fun drawBaseLine() {
@@ -135,24 +143,22 @@ class ChartView @JvmOverloads constructor(context: Context? = null, attrs: Attri
             plog("No Data")
             // todo: show user
         } else {
-            renderer.drawBaseLine(DisplayUtils.convertDpToPixel(2 * 16) / height.toFloat(), min, max)
+            renderer.drawBaseLine(min, max)
+//            renderer.drawBaseLine(DisplayUtils.convertDpToPixel(2 * 16) / height.toFloat(), min, max)
             renderer.count = count
             requestRender()
         }
-    }
-
-    private fun drawLabels() {
-//        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    private fun drawLegends() {
-//        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     private fun animateChart() {
         if (animating)
             return
         animating = true
+        labelView?.disappear()
+        legendView?.disappear()
+        categoryView?.disappear()
+        legendView?.appear()
+        categoryView?.appear()
         GlobalScope.launch {
             val timeStep = 1L
 //            val timeStep = 30L
@@ -172,20 +178,67 @@ class ChartView @JvmOverloads constructor(context: Context? = null, attrs: Attri
             renderer.animate(1f)
             requestRender()
             animating = false
+            labelView?.appear()
         }
     }
-}
 
-//    override fun performClick(): Boolean {
-//        super.performClick()
-//        notifyUser("Chart Changed!")
-//        return true
-//    }
-//
-//    @Suppress("SameParameterValue")
-//    private fun notifyUser(message: String) {
-////        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-//    }
+    fun setLegendView(legendView: ChartLegend) {
+        this.legendView = legendView
+    }
+
+    fun setCategoryView(categoryView: ChartCategory) {
+        this.categoryView = categoryView
+    }
+
+    fun setLabelView(label: ChartLabel) {
+        this.labelView = label
+    }
+
+    fun <T> radius(r: T, unit: CT_Unit = CT_Unit.DP): ChartView {
+        renderer.radius(r, unit)
+        return this
+    }
+
+    fun highQuality(high: Boolean = true): ChartView {
+        renderer.highQuality = high
+        return this
+    }
+
+    fun rtl(rtl: Boolean = true): ChartView {
+        renderer.rtl = true
+        this.rtl = rtl
+        return this
+    }
+
+    fun font(font: String, context: Context): ChartView {
+        typeface = Typeface.createFromAsset(context.assets, font)
+        return this
+    }
+
+    fun <T> fontSize(sp: T): ChartView {
+        when (sp) {
+            is Int -> sp.toFloat()
+            is Float -> sp
+            else -> null
+        }?.let { this.fontSize = DisplayUtils.convertSpToPixel(it) }
+        return this
+    }
+
+    override fun getShaderCode(@RawRes shaderRes: Int): String = context.getRawResString(shaderRes)
+    override fun getRtl(): Boolean = rtl
+    override fun getTypeface(): Typeface? = typeface
+    override fun getFontSize(): Int? = fontSize
+}
+////    override fun performClick(): Boolean {
+////        super.performClick()
+////        notifyUser("Chart Changed!")
+////        return true
+////    }
+////
+////    @Suppress("SameParameterValue")
+////    private fun notifyUser(message: String) {
+//////        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+////    }
 //
 //    override fun onTouchEvent(e: MotionEvent): Boolean {
 ////        todo: implement performClick
