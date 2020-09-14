@@ -4,12 +4,16 @@ import android.graphics.PointF
 import com.payam1991gr.chart.tool.renderer.IShapeParent
 import com.payam1991gr.chart.tool.util.GLColor
 import com.payam1991gr.chart.tool.util.lessThan
+import kotlin.math.sqrt
 
 class Bar(parent: IShapeParent) : BaseShape(parent) {
     private var start = PointF()
     private var end = PointF()
     private var radius = 0f
     private var color = GLColor.Black
+    var fixStartPoint: PointF? = null
+    var fixEndPoint: PointF? = null
+    var basePoint: PointF? = null
 
     private val rectangle1 = Rectangle(parent)
     private val rectangle2 = Rectangle(parent)
@@ -125,6 +129,22 @@ class Bar(parent: IShapeParent) : BaseShape(parent) {
     }
 
     fun refresh() {
+        apply(start, end, radius, color)
+    }
+
+    fun fixPoints() {
+        fixStartPoint = start
+        fixEndPoint = end
+    }
+
+    fun fixApply(ratio: Float, base: Float) {
+//        (1 - ratio).let { ratio -> sqrt(1 - ratio * ratio) }.let { r ->
+        sqrt(ratio).let { r ->
+            fixStartPoint?.let { start = PointF(it.x, base + r * (it.y - base)) }
+            fixEndPoint?.let { end = PointF(it.x, base + r * (it.y - base)) }
+        }
+//        fixStartPoint?.let { start = PointF(it.x, base + ratio * (it.y - base)) }
+//        fixEndPoint?.let { end = PointF(it.x, base + ratio * (it.y - base)) }
         apply(start, end, radius, color)
     }
 }

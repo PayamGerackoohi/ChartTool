@@ -2,14 +2,16 @@ package com.payam1991gr.chart.tool.shape
 
 import android.graphics.PointF
 import android.opengl.GLES20
+import com.payam1991gr.chart.tool.renderer.BaseRenderer
 import com.payam1991gr.chart.tool.renderer.ChartRenderer
 import com.payam1991gr.chart.tool.renderer.IShapeParent
 import com.payam1991gr.chart.tool.util.GLColor
+import com.payam1991gr.chart.tool.util.plog
 import com.payam1991gr.chart.tool.util.toRadians
 import java.nio.FloatBuffer
 import kotlin.math.*
 
-class Arc(parent: IShapeParent) : BaseShape(parent) {
+class Arc(private val parent: IShapeParent) : BaseShape(parent) {
     companion object {
         private const val COORDS_PER_VERTEX = 3
         private const val VertexStride = COORDS_PER_VERTEX * 4
@@ -52,13 +54,13 @@ class Arc(parent: IShapeParent) : BaseShape(parent) {
         this.color = color
         this.skewness = skewness
         this.precisionFactor = precisionFactor
-        valid = startDegree < endDegree
-        if (valid) {
+        valid = startDegree < endDegree && radius > 0
+        vertexBuffer = if (valid) {
             calculateVertexCount()
-            vertexBuffer = floatBufferOf(makeVertices())
+            floatBufferOf(makeVertices())
         } else {
-            vertexBuffer = floatBufferOf()
-//            plog("Invalid points: startDegree", startDegree, "endDegree", endDegree)
+            floatBufferOf()
+            //            plog("Invalid points: startDegree", startDegree, "endDegree", endDegree)
         }
     }
 
@@ -67,11 +69,12 @@ class Arc(parent: IShapeParent) : BaseShape(parent) {
     }
 
     private fun calculateVertexCount() {
-        var a = radius * precisionFactor / ChartRenderer.DisplayMinDim.toFloat() * 33000f + 4f
+        var a = radius * precisionFactor * parent.getQualityFactor() + 4f
+//        var a = radius * precisionFactor * 33000f / BaseRenderer.displayMinDim.toFloat() + 4f
         a *= (endDegree - startDegree) / 90f
         round(a).toInt().let {
             vertexCount = if (it < 3) 3 else it
-            if (ChartRenderer.HighQuality)
+            if (BaseRenderer.HighQuality)
                 vertexCount *= 2
         }
     }

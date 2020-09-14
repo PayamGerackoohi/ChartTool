@@ -24,6 +24,8 @@ fun String.safeToInt(): Int {
 
 fun PointF.lessThan(other: PointF): Boolean = x < other.x && y < other.y
 fun PointF.lessThanOrEqual(other: PointF): Boolean = x <= other.x && y <= other.y
+fun PointF.notEqualTo(other: PointF): Boolean = x != other.x || y != other.y
+fun PointF.equalsTo(other: PointF): Boolean = x == other.x && y == other.y
 
 fun linSpace(start: Float, end: Float, num: Int): List<Float> {
     return if (num > 1) {

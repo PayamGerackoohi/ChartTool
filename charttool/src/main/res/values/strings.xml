@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Chart Tool Library</string>
+    <string name="legend1">Legend 1</string>
 </resources>

@@ -3,7 +3,6 @@ package com.payam1991gr.chart.tool.util
 import com.payam1991gr.chart.tool.util.Constants.Companion.DebugMode
 import com.payam1991gr.chart.tool.util.Constants.Companion.LibName
 
-
 fun plog() = baseLog("is called.")
 fun plog(message: String) = baseLog(message)
 fun plog(vararg args: Any) {

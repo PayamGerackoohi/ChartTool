@@ -23,9 +23,9 @@ class DisplayUtils {
         }
 
         private fun displayMetrics(context: Context): DisplayMetrics {
-            val displaymetrics = DisplayMetrics()
-            (context as Activity).windowManager.defaultDisplay.getMetrics(displaymetrics)
-            return displaymetrics
+            val displayMetrics = DisplayMetrics()
+            (context as Activity).windowManager.defaultDisplay.getMetrics(displayMetrics)
+            return displayMetrics
         }
 
         fun setWindowHeight(activity: Activity, dialog: Dialog, percent: Int) {

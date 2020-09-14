@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.payam1991gr.chart.tool.ChartView
+    <com.payam1991gr.chart.tool.ChartTestView
         android:id="@+id/chart"
         android:layout_width="0dp"
         android:layout_height="0dp"
