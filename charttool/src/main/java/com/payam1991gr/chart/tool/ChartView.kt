@@ -9,7 +9,7 @@ import androidx.annotation.RawRes
 import androidx.core.content.ContextCompat
 import com.payam1991gr.chart.tool.data.CTData
 import com.payam1991gr.chart.tool.data.CT_Unit
-import com.payam1991gr.chart.tool.data.ILegendParent
+import com.payam1991gr.chart.tool.data.ICTWidgetParent
 import com.payam1991gr.chart.tool.renderer.ChartRenderer
 import com.payam1991gr.chart.tool.util.DisplayUtils
 import com.payam1991gr.chart.tool.util.getRawResString
@@ -18,7 +18,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
-class ChartView : GLSurfaceView, IRendererParent, ILegendParent {
+class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
@@ -41,6 +41,7 @@ class ChartView : GLSurfaceView, IRendererParent, ILegendParent {
     private var rtl = false
     private var typeface: Typeface? = null
     private var fontSize: Int? = null
+    private val categories = ArrayList<String>()
 
     init {
         setEGLContextClientVersion(2)
@@ -59,7 +60,8 @@ class ChartView : GLSurfaceView, IRendererParent, ILegendParent {
     }
 
     fun categories(list: List<String>): ChartView {
-        categoryView?.setCategories(list)
+        categories.clear()
+        categories.addAll(list)
         return this
     }
 
@@ -71,6 +73,7 @@ class ChartView : GLSurfaceView, IRendererParent, ILegendParent {
     }
 
     private fun getHeightLazy() {
+        categoryView?.setCategories(this, categories)
         Handler().postDelayed({
             if (height > 0)
                 startPlot()
@@ -81,7 +84,6 @@ class ChartView : GLSurfaceView, IRendererParent, ILegendParent {
 
     private fun startPlot() {
         renderer.width = width
-        renderer.height = height
         gatherResources()
         drawBaseLine()
         // todo: drawValueBar()
@@ -103,7 +105,7 @@ class ChartView : GLSurfaceView, IRendererParent, ILegendParent {
 
     private fun drawBars() {
         renderer.consumeData(dataList)
-        requestRender()
+//        requestRender()
         GlobalScope.launch {
             Thread.sleep(500)
             animateChart()
@@ -138,7 +140,6 @@ class ChartView : GLSurfaceView, IRendererParent, ILegendParent {
                 }
             }
         }
-        plog("count", count, "min", min, "max", max)
         if (count == 0) {
             plog("No Data")
             // todo: show user
@@ -146,7 +147,7 @@ class ChartView : GLSurfaceView, IRendererParent, ILegendParent {
             renderer.drawBaseLine(min, max)
 //            renderer.drawBaseLine(DisplayUtils.convertDpToPixel(2 * 16) / height.toFloat(), min, max)
             renderer.count = count
-            requestRender()
+//            requestRender()
         }
     }
 

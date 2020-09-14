@@ -35,14 +35,14 @@ class ChartTestPage : BasePage() {
         chart1
             .data(
                 CTData()
-                    .name("سلام")
+                    .name("سبز")
 //                    .name("Sample 1")
                     .values(arrayListOf(2, 4, 3, -1, 2, 5))
                     .labels(arrayListOf("2:0", "4:0", "3:0", "-1", "2", "5"))
                     .colorId(R.color.green),
 //                    .color(GLColor.Green),
                 CTData()
-                    .name("ببین")
+                    .name("آبی")
 //                    .name("s2")
                     .values(arrayListOf(3, -2, 4, -3, 5, 2))
                     .labels(arrayListOf("3:0", "-2:0", "4:0", "-3", "5", "2"))
@@ -50,13 +50,14 @@ class ChartTestPage : BasePage() {
 //                    .color(GLColor.Blue),
                 CTData()
 //                    .name("Legend Sample 3")
-                    .name("سیب داره نمی‌افته")
+                    .name("قرمز")
                     .values(arrayListOf(-5, 3, 2, 4, 1, 3))
                     .labels(arrayListOf("-5:0", "3:0", "2:0", "4", "1", "3"))
                     .colorId(R.color.red)
 //                    .color(GLColor.Red)
             )
-            .categories(arrayListOf("Jan", "Feb", "Mar"))
+            .categories(arrayListOf("فروردین ۱۳۹۹", "اردیبهشت ۱۳۹۹", "خرداد ۱۳۹۹", "تیر ۱۳۹۹", "مرداد ۱۳۹۹", "شهریور ۱۳۹۹"))
+//            .categories(arrayListOf("Jan", "Feb", "Mar", "Apr", "May", "Jun"))
             .rtl()
             .font("fonts/B-NAZANIN.TTF", this)
             .fontSize(14)

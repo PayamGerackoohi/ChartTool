@@ -24,9 +24,8 @@ class ChartRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSur
     private val viewMatrix = FloatArray(16)
     var rtl = false
     var width: Int = 0
-    var height: Int = 0
-
-    //    private var baseLine: Line? = null
+    private var isDataSet = false
+    private var isReady = false
     private var baseLine: Rectangle? = null
     private var radiusUnit = CT_Unit.Native
     private var radius = .025f
@@ -69,6 +68,7 @@ class ChartRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSur
     }
 
     override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
+//        plog("width", width, "height", height)
         GLES20.glViewport(0, 0, width, height)
         displayRatio = width.toFloat() / height.toFloat()
         invDisplayRatio = 1 / displayRatio
@@ -80,9 +80,19 @@ class ChartRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSur
 
         Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, -invDisplayRatio, 0f, 0f, 0f, 0f, 1.0f, 0.0f)
         Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
+
+        if (isReady) {
+            drawBaseLine(min, max)
+            onNewData = true
+            onDrawFrame(unused)
+        }
     }
 
     override fun onDrawFrame(unused: GL10) {
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+        if (!isReady)
+            return
+//        plog()
         if (onNewData) {
             onNewData = false
             (0 until count).forEach { index ->
@@ -113,12 +123,11 @@ class ChartRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSur
                         }
                     }
                 }
+//                isDataSet = true
             }
         } else {
-            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
 //        Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, -invDisplayRatio, 0f, 0f, 0f, 0f, 1.0f, 0.0f)
 //        Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
-
             try {
                 positiveBarList.forEach { it.draw(vPMatrix) }
                 negativeBarList.forEach { it.draw(vPMatrix) }
@@ -133,6 +142,7 @@ class ChartRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSur
 
     //    fun drawBaseLine(height: Float, min: Int, max: Int) {
     fun drawBaseLine(min: Int, max: Int) {
+//        plog()
         this.min = min
         this.max = max
 //        val h = invDisplayRatio * (2 * height - 1)
@@ -140,6 +150,7 @@ class ChartRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSur
         scale = 2 * invDisplayRatio / (max - min)
 //        scale = (invDisplayRatio - h) / (max - min)
         base = h - scale * min
+//        plog("invDisplayRatio", invDisplayRatio, "scale", scale, "base", base)
 //        plog("base", base, "scale", scale, "h", h)
 //        plog("displayMinDim", displayMinDim)
         val dy = invDisplayRatio / 200f
@@ -148,8 +159,10 @@ class ChartRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSur
     }
 
     fun consumeData(dataList: List<CTData>) {
+//        plog()
         this.dataList = dataList
         onNewData = true
+        isReady = true
     }
 
     fun animate(ratio: Float) {

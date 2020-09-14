@@ -12,6 +12,7 @@ import kotlin.collections.ArrayList
 import kotlin.math.PI
 
 const val d2rF = PI.toFloat() / 180f
+const val r2dF = 180f / PI.toFloat()
 
 fun now() = System.currentTimeMillis()
 
@@ -37,6 +38,7 @@ fun linSpace(start: Float, end: Float, num: Int): List<Float> {
 }
 
 fun Float.toRadians(): Float = this * d2rF
+fun Float.toDegrees(): Float = this * r2dF
 
 fun Context.getRawResString(@RawRes rawRes: Int): String {
     val inputStream = resources.openRawResource(rawRes)

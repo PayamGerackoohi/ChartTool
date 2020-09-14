@@ -37,10 +37,9 @@
     <com.payam1991gr.chart.tool.ChartCategory
         android:id="@+id/chart1Category"
         android:layout_width="0dp"
-        android:layout_height="32dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:background="#300f"
         app:layout_constraintBottom_toTopOf="@+id/chart1Legend"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
@@ -48,14 +47,13 @@
     <com.payam1991gr.chart.tool.ChartLegend
         android:id="@+id/chart1Legend"
         android:layout_width="0dp"
-        android:layout_height="32dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/glhm"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
-    <!--        android:background="#3f00"-->
 
     <com.payam1991gr.chart.tool.ChartView
         android:id="@+id/chart2"

@@ -11,9 +11,12 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.ViewCompat
-import com.payam1991gr.chart.tool.data.ILegendParent
+import com.payam1991gr.chart.tool.data.ICTWidgetParent
 import com.payam1991gr.chart.tool.util.DisplayUtils
 import com.payam1991gr.chart.tool.util.plog
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class ChartLegend : ViewGroup {
     companion object {
@@ -22,9 +25,7 @@ class ChartLegend : ViewGroup {
 
     private var legends = ArrayList<String>()
     private var legendColors = ArrayList<Int>()
-    private var textViewList = ArrayList<AppCompatTextView>()
-    private var colorViewList = ArrayList<View>()
-    private var holder: ILegendParent? = null
+    private var holder: ICTWidgetParent? = null
 
     constructor(context: Context) : super(context)
 
@@ -35,8 +36,7 @@ class ChartLegend : ViewGroup {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
 
-    fun setLegends(holder: ILegendParent, list: List<String>, colors: List<Int>) {
-        plog()
+    fun setLegends(holder: ICTWidgetParent, list: List<String>, colors: List<Int>) {
         this.holder = holder
         legends.clear()
         legends.addAll(list)
@@ -46,10 +46,7 @@ class ChartLegend : ViewGroup {
     }
 
     private fun buildChildren() {
-        plog()
         removeAllViews()
-        textViewList.clear()
-        colorViewList.clear()
         val circleSize = DisplayUtils.convertDpToPixel(CIRCLE_SIZE)
         legends.forEachIndexed { index, legend ->
             val tv = AppCompatTextView(context).apply {
@@ -72,32 +69,29 @@ class ChartLegend : ViewGroup {
                 setBackgroundResource(R.drawable.circle)
                 ViewCompat.setBackgroundTintList(this, ColorStateList.valueOf(legendColors[index]))
             }
-            textViewList.add(tv)
             addView(tv)
-            colorViewList.add(v)
             addView(v)
         }
+        alpha = 0f
         invalidate()
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        plog()
         // #################################### < Weighted Space Distribution > ####################################
         val rtl = holder?.getRtl() == true
-        plog("rtl", rtl)
-        val edgeWeight = 2
+        val edgeWeight = 1.5f
 
         val count = childCount
         var contentWidth = 0
-        for (i in 0 until count step 2) {
+        for (i in 0 until count) {
             contentWidth += getChildAt(i).measuredWidth
         }
         val quota = 2 * edgeWeight + (count / 2) - 1
 
         val totalFreeSpace = measuredWidth - contentWidth
         // todo: check if totalFreeSpace > 0
-        val innerSpace = totalFreeSpace / quota
-        val edgeSpace = edgeWeight * innerSpace
+        val innerSpace = (totalFreeSpace / quota).toInt()
+        val edgeSpace = (edgeWeight * innerSpace).toInt()
 
         var startX = edgeSpace
         val centerY = measuredHeight / 2
@@ -176,12 +170,10 @@ class ChartLegend : ViewGroup {
         measureChildren(widthMeasureSpec, heightMeasureSpec) // Find out how big everyone wants to be
         for (i in 0 until count) {
             val child = getChildAt(i)
-//            if (child.visibility != View.GONE) {
             val childRight: Int = child.x.toInt() + child.measuredWidth
             val childBottom: Int = child.y.toInt() + child.measuredHeight
             maxWidth = maxWidth.coerceAtLeast(childRight)
             maxHeight = maxHeight.coerceAtLeast(childBottom)
-//            }
         }
         maxHeight = maxHeight.coerceAtLeast(suggestedMinimumHeight)
         maxWidth = maxWidth.coerceAtLeast(suggestedMinimumWidth)
@@ -192,12 +184,13 @@ class ChartLegend : ViewGroup {
     }
 
     fun appear() {
-//        plog()
-//        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        GlobalScope.launch(Main) {
+            alpha = 0f
+            animate().alpha(1f).setDuration(1000L).start()
+        }
     }
 
     fun disappear() {
-//        plog()
-//        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        GlobalScope.launch(Main) { alpha = 0f }
     }
 }
