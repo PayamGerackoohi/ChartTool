@@ -2,6 +2,7 @@ package com.payam1991gr.chart.tool.util
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Point
 import android.graphics.PointF
 import android.view.View
 import androidx.annotation.RawRes
@@ -85,3 +86,22 @@ fun View.gone() {
 fun View.hide() {
     visibility = View.INVISIBLE
 }
+
+operator fun PointF?.plus(rhs: PointF?): PointF? = this?.let { rhs?.let { PointF((x + rhs.x), (y + rhs.y)) } }
+operator fun PointF?.plus(rhs: Float?): PointF? = this?.let { rhs?.let { PointF((x + rhs), (y + rhs)) } }
+operator fun PointF?.div(rhs: PointF?): PointF? = this?.let { rhs?.let { PointF(x / rhs.x, y / rhs.y) } }
+operator fun PointF?.div(rhs: Float?): PointF? = this?.let { rhs?.let { PointF(x / rhs, y / rhs) } }
+operator fun PointF?.times(rhs: PointF?): PointF? = this?.let { rhs?.let { PointF(x * rhs.x, y * rhs.y) } }
+operator fun PointF?.times(rhs: Float?): PointF? = this?.let { rhs?.let { PointF(x * rhs, y * rhs) } }
+
+// *** benefit: no new data creation, drawback: lhs prev data is lost ***
+//operator fun PointF?.plus(rhs: PointF?): PointF? = this?.let { rhs?.let { apply { x += rhs.x; y += rhs.y } } }
+//operator fun PointF?.plus(rhs: Float?): PointF? = this?.let { rhs?.let { apply { x += rhs; y += rhs } } }
+//operator fun PointF?.div(rhs: PointF?): PointF? = this?.let { rhs?.let { apply { x /= rhs.x; y /= rhs.y } } }
+//operator fun PointF?.div(rhs: Float?): PointF? = this?.let { rhs?.let { apply { x /= rhs; y /= rhs } } }
+//operator fun PointF?.times(rhs: PointF?): PointF? = this?.let { rhs?.let { apply { x *= rhs.x; y *= rhs.y } } }
+//operator fun PointF?.times(rhs: Float?): PointF? = this?.let { rhs?.let { apply { x *= rhs; y *= rhs } } }
+
+fun PointF?.toInt(): Point? = this?.let { Point(x.toInt(), y.toInt()) }
+@Suppress("FunctionName")
+fun PointF(x: Int, y: Int): PointF = PointF(x.toFloat(), y.toFloat())

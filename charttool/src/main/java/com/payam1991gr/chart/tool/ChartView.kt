@@ -1,10 +1,12 @@
 package com.payam1991gr.chart.tool
 
 import android.content.Context
+import android.graphics.Point
 import android.graphics.Typeface
 import android.opengl.GLSurfaceView
 import android.os.Handler
 import android.util.AttributeSet
+import android.view.MotionEvent
 import androidx.annotation.RawRes
 import androidx.core.content.ContextCompat
 import com.payam1991gr.chart.tool.data.CTData
@@ -83,7 +85,6 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
     }
 
     private fun startPlot() {
-        renderer.width = width
         gatherResources()
         drawBaseLine()
         // todo: drawValueBar()
@@ -93,14 +94,16 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
     private fun gatherResources() {
         val legends = ArrayList<String>()
         val legendColors = ArrayList<Int>()
+        val labels = ArrayList<ArrayList<String>>()
         dataList.forEach { data ->
             data.nameId?.let { data.name(context.getString(it)) }
             data.colorId?.let { data.color(ContextCompat.getColor(context, it)) }
-            labelView?.setLabels(data.labels)
+            labels.addAll(listOf(data.labels))
             legends.add(data.name)
             legendColors.add(data.color.toColor())
         }
         legendView?.setLegends(this, legends, legendColors)
+        labelView?.setLabels(this, labels)
     }
 
     private fun drawBars() {
@@ -152,12 +155,13 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
     }
 
     private fun animateChart() {
+        plog("animating", animating)
         if (animating)
             return
         animating = true
-        labelView?.disappear()
         legendView?.disappear()
         categoryView?.disappear()
+        labelView?.disappear()
         legendView?.appear()
         categoryView?.appear()
         GlobalScope.launch {
@@ -225,29 +229,38 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
         return this
     }
 
+    override fun onFrameChanged() {
+//        plog()
+        labelView?.refresh()
+    }
+
+    override fun setLabelCoords(coords: List<Point?>) {
+//        plog("width", width, "height", height)
+        labelView?.updateCoords(coords)
+    }
+
     override fun getShaderCode(@RawRes shaderRes: Int): String = context.getRawResString(shaderRes)
     override fun getRtl(): Boolean = rtl
     override fun getTypeface(): Typeface? = typeface
     override fun getFontSize(): Int? = fontSize
-}
-////    override fun performClick(): Boolean {
-////        super.performClick()
-////        notifyUser("Chart Changed!")
-////        return true
-////    }
-////
-////    @Suppress("SameParameterValue")
-////    private fun notifyUser(message: String) {
-//////        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-////    }
+//    override fun performClick(): Boolean {
+//        super.performClick()
+//        notifyUser("Chart Changed!")
+//        return true
+//    }
 //
-//    override fun onTouchEvent(e: MotionEvent): Boolean {
-////        todo: implement performClick
-//        val x: Float = e.x
-//        val y: Float = e.y
-//
-//        when (e.action) {
-//            MotionEvent.ACTION_MOVE -> {
+//    @Suppress("SameParameterValue")
+//    private fun notifyUser(message: String) {
+////        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+//    }
+
+    override fun onTouchEvent(e: MotionEvent): Boolean {
+//        todo: implement performClick
+        val x: Float = e.x
+        val y: Float = e.y
+
+        when (e.action) {
+            MotionEvent.ACTION_MOVE -> {
 //                var dx: Float = x - previousX
 //                var dy: Float = y - previousY
 //                if (cornerRadius) {
@@ -264,10 +277,16 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
 //                    }
 //                }
 //                requestRender()
-//            }
+            }
+            MotionEvent.ACTION_UP -> {
+//                val coord = renderer.getCoordAt(x, y)
+//                plog("x", x, "y", y, "coord.x", coord.x, "coord.y", coord.y)
+            }
+        }
 //            MotionEvent.ACTION_UP -> performClick()
-//        }
 //        previousX = x
 //        previousY = y
 //        return true
-//    }
+        return super.onTouchEvent(e)
+    }
+}

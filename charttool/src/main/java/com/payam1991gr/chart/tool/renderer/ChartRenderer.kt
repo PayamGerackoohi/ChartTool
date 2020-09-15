@@ -1,17 +1,21 @@
 package com.payam1991gr.chart.tool.renderer
 
+import android.annotation.TargetApi
+import android.graphics.Outline
+import android.graphics.Point
 import android.graphics.PointF
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
+import android.os.Build
+import android.view.View
+import android.view.ViewOutlineProvider
 import com.payam1991gr.chart.tool.IRendererParent
 import com.payam1991gr.chart.tool.data.CTData
 import com.payam1991gr.chart.tool.data.CT_Unit
 import com.payam1991gr.chart.tool.shape.Bar
 import com.payam1991gr.chart.tool.shape.Rectangle
-import com.payam1991gr.chart.tool.util.DisplayUtils
-import com.payam1991gr.chart.tool.util.GLColor
-import com.payam1991gr.chart.tool.util.plog
+import com.payam1991gr.chart.tool.util.*
 import java.lang.Exception
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -22,11 +26,9 @@ class ChartRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSur
     private val vPMatrix = FloatArray(16)
     private val projectionMatrix = FloatArray(16)
     private val viewMatrix = FloatArray(16)
-    var rtl = false
-    var width: Int = 0
-    private var isDataSet = false
-    private var isReady = false
     private var baseLine: Rectangle? = null
+    private var width: Int = 0
+    private var height: Int = 0
     private var radiusUnit = CT_Unit.Native
     private var radius = .025f
         get() {
@@ -38,6 +40,12 @@ class ChartRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSur
                 CT_Unit.SP -> convertPxToNative(DisplayUtils.convertSpToPixel(field))
             }
         }
+
+    private val barMap = ArrayList<ArrayList<Bar>>()
+    private var dataList: List<CTData>? = null
+    private var onNewData = false
+    private var isReady = false
+    var rtl = false
 
     @Volatile
     private var scale = 1f
@@ -60,15 +68,14 @@ class ChartRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSur
     @Volatile
     private var base = 0f
 
-    private var dataList: List<CTData>? = null
-    private var onNewData = false
-
     override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
         GLES20.glClearColor(1f, 1f, 1f, 1f)
     }
 
     override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
 //        plog("width", width, "height", height)
+        this.width = width
+        this.height = height
         GLES20.glViewport(0, 0, width, height)
         displayRatio = width.toFloat() / height.toFloat()
         invDisplayRatio = 1 / displayRatio
@@ -86,44 +93,74 @@ class ChartRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSur
             onNewData = true
             onDrawFrame(unused)
         }
+        parent.onFrameChanged()
+    }
+
+    private fun makeLabelCoords() {
+//        plog("width", width, "height", height, "invDisplayRatio", invDisplayRatio)
+        val coords = ArrayList<Point?>()
+        barMap.forEach { series ->
+            val a = PointF(1f, invDisplayRatio)
+            val b = width / 2f
+            series.forEach {
+                coords.add(((it.fixedCenter()?.apply { y = -y } + a) * b).toInt())
+//                coords.add(((PointF() + a) * b)?.apply { y = height - y })
+//                coords.add(((it.fixedCenter()?.apply { plog("fixedCenter.x", x, "fixedCenter.y", y) } + a) * b).toInt()?.apply { y = height - y })
+            }
+//            series.forEach { coords.add(((it.fixedCenter()?.apply { y = y } + a) * b).toInt()) }
+        }
+        parent.setLabelCoords(coords)
+//            val coords = ArrayList<ArrayList<Point?>>()
+//            barMap.forEach { series ->
+//                val list = ArrayList<Point?>()
+//                series.forEach { list.add((it.fixedCenter() * PointF(width, height)).toInt()) }
+//                coords.add(list)
+//            }
+//            parent.setLabelCoords(coords)
     }
 
     override fun onDrawFrame(unused: GL10) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+        plog("isReady", isReady, "onNewData", onNewData)
         if (!isReady)
             return
 //        plog()
         if (onNewData) {
             onNewData = false
-            (0 until count).forEach { index ->
+            barMap.clear()
+            (0 until count).forEach { _ -> barMap.add(ArrayList()) }
+            (0 until count).forEach { column ->
                 var positiveHeight = 0f
                 var negativeHeight = 0f
                 val stepMargin = .15f
-                val xs = (index + stepMargin) * step - 1
-                val xe = (index + 1 - stepMargin) * step - 1
-//                val xe = xs + step * (1 - 2 * stepMargin)
-                dataList?.forEach { data ->
-                    data.values.getOrNull(index)?.let { value ->
+                val xs = (column + stepMargin) * step - 1
+                val xe = (column + 1 - stepMargin) * step - 1
+                dataList?.forEachIndexed { row, series ->
+                    series.values.getOrNull(column)?.let { value ->
                         if (value < 0) {
                             val ye = base + negativeHeight
                             negativeHeight += scale * value
                             val ys = base + negativeHeight
-                            negativeBarList.add(Bar(this@ChartRenderer).apply {
-                                apply(PointF(xs, ys), PointF(xe, ye), radius, data.color)
+                            val bar = Bar(this@ChartRenderer).apply {
+                                apply(PointF(xs, ys), PointF(xe, ye), radius, series.color)
                                 fixPoints()
-                            })
+                            }
+                            barMap[row].add(bar)
+                            negativeBarList.add(bar)
                         } else {
                             val ys = base + positiveHeight
                             positiveHeight += scale * value
                             val ye = base + positiveHeight
-                            positiveBarList.add(Bar(this@ChartRenderer).apply {
-                                apply(PointF(xs, ys), PointF(xe, ye), radius, data.color)
+                            val bar = Bar(this@ChartRenderer).apply {
+                                apply(PointF(xs, ys), PointF(xe, ye), radius, series.color)
                                 fixPoints()
-                            })
+                            }
+                            barMap[row].add(bar)
+                            positiveBarList.add(bar)
                         }
                     }
                 }
-//                isDataSet = true
+                makeLabelCoords()
             }
         } else {
 //        Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, -invDisplayRatio, 0f, 0f, 0f, 0f, 1.0f, 0.0f)
@@ -192,4 +229,7 @@ class ChartRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSur
     }
 
     override fun highQuality(): Boolean = highQuality
+//    fun getCoordAt(x: Float, y: Float): PointF {
+//        return PointF(x / width, y / height)
+//    }
 }

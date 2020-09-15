@@ -1,6 +1,8 @@
 package com.payam1991gr.chart.tool
 
 import android.content.Context
+import android.graphics.Point
+import android.graphics.PointF
 import android.opengl.GLSurfaceView
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -9,8 +11,10 @@ import androidx.annotation.RawRes
 import com.payam1991gr.chart.tool.renderer.ChartTestRenderer
 import com.payam1991gr.chart.tool.util.getRawResString
 
-class ChartTestView @JvmOverloads constructor(context: Context? = null, attrs: AttributeSet? = null) : GLSurfaceView(context, attrs),
-    IRendererParent {
+class ChartTestView : GLSurfaceView, IRendererParent {
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
+
     companion object {
         private const val ROTATION_TOUCH_SCALE_FACTOR: Float = 0.0625f
     }
@@ -86,4 +90,9 @@ class ChartTestView @JvmOverloads constructor(context: Context? = null, attrs: A
     }
 
     override fun getShaderCode(@RawRes shaderRes: Int): String = context.getRawResString(shaderRes)
+    override fun setLabelCoords(coords: List<Point?>) {
+    }
+
+    override fun onFrameChanged() {
+    }
 }

@@ -3,7 +3,9 @@ package com.payam1991gr.chart.tool.shape
 import android.graphics.PointF
 import com.payam1991gr.chart.tool.renderer.IShapeParent
 import com.payam1991gr.chart.tool.util.GLColor
+import com.payam1991gr.chart.tool.util.div
 import com.payam1991gr.chart.tool.util.lessThan
+import com.payam1991gr.chart.tool.util.plus
 import kotlin.math.sqrt
 
 class Bar(parent: IShapeParent) : BaseShape(parent) {
@@ -146,5 +148,9 @@ class Bar(parent: IShapeParent) : BaseShape(parent) {
 //        fixStartPoint?.let { start = PointF(it.x, base + ratio * (it.y - base)) }
 //        fixEndPoint?.let { end = PointF(it.x, base + ratio * (it.y - base)) }
         apply(start, end, radius, color)
+    }
+
+    fun fixedCenter(): PointF? {
+        return (fixStartPoint + fixEndPoint) / 2f
     }
 }

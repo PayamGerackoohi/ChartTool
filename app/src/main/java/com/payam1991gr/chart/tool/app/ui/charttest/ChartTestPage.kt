@@ -31,12 +31,27 @@ class ChartTestPage : BasePage() {
         chart1.setLegendView(chart1Legend)
         chart1.setCategoryView(chart1Category)
         chart1.setLabelView(chart1Label)
-
+//        chart1
+//            .data(
+//                CTData()
+//                    .nameId(R.string.legend1)
+//                    .values(arrayListOf(2, 4, 3))
+//                    .labels(arrayListOf("2:0", "4:0", "3:0"))
+//                    .color(Color.RED)
+//            )
+//            .categories(arrayListOf("Jan", "Feb", "Mar"))
+//            .font("fonts/B-NAZANIN.TTF", this)
+//            .fontSize(14)
+//            .radius(6)
+//            .show()
+//
         chart1
             .data(
                 CTData()
                     .name("سبز")
 //                    .name("Sample 1")
+//                    .values(arrayListOf(1, 1, 1, 1, 1, 1))
+//                    .labels(arrayListOf("1", "1", "1", "1", "1", "1"))
                     .values(arrayListOf(2, 4, 3, -1, 2, 5))
                     .labels(arrayListOf("2:0", "4:0", "3:0", "-1", "2", "5"))
                     .colorId(R.color.green),
@@ -44,6 +59,8 @@ class ChartTestPage : BasePage() {
                 CTData()
                     .name("آبی")
 //                    .name("s2")
+//                    .values(arrayListOf(2, 2, 2, 2, 2, 2))
+//                    .labels(arrayListOf("2", "2", "2", "2", "2", "2"))
                     .values(arrayListOf(3, -2, 4, -3, 5, 2))
                     .labels(arrayListOf("3:0", "-2:0", "4:0", "-3", "5", "2"))
                     .colorId(R.color.blue),
@@ -51,6 +68,8 @@ class ChartTestPage : BasePage() {
                 CTData()
 //                    .name("Legend Sample 3")
                     .name("قرمز")
+//                    .values(arrayListOf(3, 3, 3, 3, 3, 3))
+//                    .labels(arrayListOf("3", "3", "3", "3", "3", "3"))
                     .values(arrayListOf(-5, 3, 2, 4, 1, 3))
                     .labels(arrayListOf("-5:0", "3:0", "2:0", "4", "1", "3"))
                     .colorId(R.color.red)
