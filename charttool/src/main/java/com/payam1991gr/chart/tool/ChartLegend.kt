@@ -11,9 +11,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.ViewCompat
-import com.payam1991gr.chart.tool.data.ICTWidgetParent
 import com.payam1991gr.chart.tool.util.DisplayUtils
-import com.payam1991gr.chart.tool.util.plog
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

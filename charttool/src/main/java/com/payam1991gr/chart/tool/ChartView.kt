@@ -11,7 +11,6 @@ import androidx.annotation.RawRes
 import androidx.core.content.ContextCompat
 import com.payam1991gr.chart.tool.data.CTData
 import com.payam1991gr.chart.tool.data.CT_Unit
-import com.payam1991gr.chart.tool.data.ICTWidgetParent
 import com.payam1991gr.chart.tool.renderer.ChartRenderer
 import com.payam1991gr.chart.tool.util.DisplayUtils
 import com.payam1991gr.chart.tool.util.getRawResString

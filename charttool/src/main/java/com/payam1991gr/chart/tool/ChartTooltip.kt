@@ -18,7 +18,6 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import com.payam1991gr.chart.tool.data.CTData
-import com.payam1991gr.chart.tool.data.ICTWidgetParent
 import com.payam1991gr.chart.tool.util.DisplayUtils
 import java.util.ArrayList
 

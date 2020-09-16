@@ -1,6 +1,7 @@
-package com.payam1991gr.chart.tool.data
+package com.payam1991gr.chart.tool
 
 import android.graphics.Typeface
+import com.payam1991gr.chart.tool.data.CTData
 
 interface ICTWidgetParent {
     fun getRtl(): Boolean
