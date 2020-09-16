@@ -20,9 +20,9 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep class com.payam1991gr.chart.tool.ChartView { *; }
--keep class com.payam1991gr.chart.tool.ChartLegend { *; }
--keep class com.payam1991gr.chart.tool.ChartCategory { *; }
--keep class com.payam1991gr.chart.tool.ChartLabel { *; }
--keep class com.payam1991gr.chart.tool.ChartTooltip { *; }
--keep class com.payam1991gr.chart.tool.data.** { *; }
+-keep,allowoptimization class com.payam1991gr.chart.tool.ChartView { public *; }
+-keep,allowoptimization class com.payam1991gr.chart.tool.ChartLegend { public *; }
+-keep,allowoptimization class com.payam1991gr.chart.tool.ChartCategory { public *; }
+-keep,allowoptimization class com.payam1991gr.chart.tool.ChartLabel { public *; }
+-keep,allowoptimization class com.payam1991gr.chart.tool.ChartTooltip { public *; }
+-keep,allowoptimization class com.payam1991gr.chart.tool.data.** { public *; }

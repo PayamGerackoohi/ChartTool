@@ -82,7 +82,7 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
                 startPlot()
             else
                 getHeightLazy()
-        }, 50)
+        }, 50L)
     }
 
     private fun startPlot() {
@@ -112,7 +112,7 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
         renderer.consumeData(dataList)
         GlobalScope.launch {
             // todo: decrease this delay
-            Thread.sleep(750)
+            Thread.sleep(250L)
             animateChart()
         }
     }
