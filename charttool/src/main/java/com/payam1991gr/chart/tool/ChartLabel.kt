@@ -1,9 +1,7 @@
 package com.payam1991gr.chart.tool
 
-import android.annotation.TargetApi
 import android.content.Context
 import android.graphics.Color
-import android.graphics.Outline
 import android.graphics.Point
 import android.graphics.Typeface
 import android.os.Build
@@ -102,7 +100,7 @@ class ChartLabel : ViewGroup {
     fun appear() {
         GlobalScope.launch(Dispatchers.Main) {
             alpha = 0f
-            animate().alpha(1f).setDuration(1000L).start()
+            animate().alpha(1f).setDuration(500L).start()
         }
     }
 
@@ -111,7 +109,7 @@ class ChartLabel : ViewGroup {
     }
 
     fun updateCoords(coords: List<Point?>) {
-        plog()
+//        plog()
         this.coords.clear()
         this.coords.addAll(coords)
         refresh()
@@ -127,10 +125,10 @@ class ChartLabel : ViewGroup {
             val hw = w / 2
             val hh = h / 2
             coord?.apply {
-                //                plog("w", w, "h", h, "coord.x", it.x, "coord.y", it.y)
+                // plog("w", w, "h", h, "coord.x", it.x, "coord.y", it.y)
                 child.layout(x - hw, y - hh, x + hw, y + hh)
-                invalidate()
             }
         }
+        invalidate()
     }
 }

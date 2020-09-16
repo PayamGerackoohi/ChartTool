@@ -10,12 +10,11 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatTextView
 import com.payam1991gr.chart.tool.data.ICTWidgetParent
-import com.payam1991gr.chart.tool.util.plog
 import com.payam1991gr.chart.tool.util.toDegrees
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlin.math.asin
+import kotlin.math.acos
 import kotlin.math.sqrt
 
 class ChartCategory : ViewGroup {
@@ -41,7 +40,7 @@ class ChartCategory : ViewGroup {
     private fun buildCategories() {
         categories.forEach { category ->
             val tv = AppCompatTextView(context).apply {
-                text = category
+                text = context.getString(R.string.fa_template).format(category)
                 holder?.getFontSize().let { size ->
                     if (size == null)
                         setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
@@ -94,16 +93,15 @@ class ChartCategory : ViewGroup {
                 maxWidth = maxWidth.coerceAtLeast(child.measuredWidth)
                 maxHeight = maxHeight.coerceAtLeast(child.measuredHeight)
             }
-            val length = 1.2f * maxWidth
+            val length = maxWidth.toFloat()
             val part = measuredWidth / childCount
             var angel = 0f
             var height = 0
             if (length > part) {
-                angel = -asin(part / length).toDegrees()
+                angel = -acos(part / length).toDegrees()
                 height = sqrt(length * length - part * part).toInt()
             }
             height = height.coerceAtLeast(maxHeight)
-//        plog("angel", angel, "length", length, "height", height, "part", part)
             setMeasuredDimension(
                 View.resolveSizeAndState(maxWidth, widthMeasureSpec, 0),
                 View.resolveSizeAndState(height, heightMeasureSpec, 0)

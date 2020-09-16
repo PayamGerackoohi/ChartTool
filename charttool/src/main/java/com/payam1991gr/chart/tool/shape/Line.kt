@@ -8,6 +8,8 @@ import com.payam1991gr.chart.tool.util.notEqualTo
 import com.payam1991gr.chart.tool.util.plog
 import java.nio.FloatBuffer
 
+// todo: needs optimization
+// todo: makes artifacts
 class Line(parent: IShapeParent) : BaseShape(parent) {
     companion object {
         private const val COORDS_PER_VERTEX = 3

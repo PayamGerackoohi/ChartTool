@@ -16,23 +16,22 @@ import com.payam1991gr.chart.tool.renderer.ChartRenderer
 import com.payam1991gr.chart.tool.util.DisplayUtils
 import com.payam1991gr.chart.tool.util.getRawResString
 import com.payam1991gr.chart.tool.util.plog
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.lang.Exception
+import kotlin.math.sin
 
+//todo: workflow is unambiguous
+@Suppress("MemberVisibilityCanBePrivate")
 class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
     companion object {
         //        private const val ROTATION_TOUCH_SCALE_FACTOR: Float = 0.0625f
-//        private const val ANIMATION_DURATION = 500L
-        private const val ANIMATION_DURATION = 200L
-//        private const val ANIMATION_DURATION = 250L
+        private const val ANIMATION_DURATION = 250L
     }
-    //    private var previousX: Float = 0f
-//    private var previousY: Float = 0f
-//    private var cornerRadius = false
 
     private var dataList = ArrayList<CTData>()
     private val renderer: ChartRenderer
@@ -40,17 +39,20 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
     private var legendView: ChartLegend? = null
     private var categoryView: ChartCategory? = null
     private var labelView: ChartLabel? = null
+    private var tooltip: ChartTooltip? = null
     private var rtl = false
     private var typeface: Typeface? = null
     private var fontSize: Int? = null
     private val categories = ArrayList<String>()
+    private var isPointerDown = false
+    private var columnCount = 0
+    private var waitingToHide = false
 
     init {
         setEGLContextClientVersion(2)
         renderer = ChartRenderer(this)
         setRenderer(renderer)
         renderMode = RENDERMODE_WHEN_DIRTY
-        setOnClickListener { animateChart() }
     }
 
     fun data(vararg data: CTData): ChartView {
@@ -102,15 +104,16 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
             legends.add(data.name)
             legendColors.add(data.color.toColor())
         }
+        columnCount = dataList.getOrNull(0)?.values?.size ?: 0
         legendView?.setLegends(this, legends, legendColors)
         labelView?.setLabels(this, labels)
     }
 
     private fun drawBars() {
         renderer.consumeData(dataList)
-//        requestRender()
         GlobalScope.launch {
-            Thread.sleep(500)
+            // todo: decrease this delay
+            Thread.sleep(750)
             animateChart()
         }
     }
@@ -148,14 +151,11 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
             // todo: show user
         } else {
             renderer.drawBaseLine(min, max)
-//            renderer.drawBaseLine(DisplayUtils.convertDpToPixel(2 * 16) / height.toFloat(), min, max)
             renderer.count = count
-//            requestRender()
         }
     }
 
-    private fun animateChart() {
-        plog("animating", animating)
+    fun animateChart() {
         if (animating)
             return
         animating = true
@@ -165,14 +165,17 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
         legendView?.appear()
         categoryView?.appear()
         GlobalScope.launch {
-            val timeStep = 1L
-//            val timeStep = 30L
+            val timeStep = 1L // as fast as you can!
+//            val timeStep = 17L // 60 fps
             var time = 0L
             while (time < ANIMATION_DURATION) {
                 Thread.sleep(timeStep)
-                val ratio = time / ANIMATION_DURATION.toFloat()
+                var ratio = time / ANIMATION_DURATION.toFloat()
 //                plog("ratio", ratio, "time", time)
                 try {
+                    // (1 - ratio).let { ratio -> sqrt(1 - ratio * ratio) }
+                    // sqrt(ratio)
+                    ratio = ((1 - sin(Math.PI * (ratio + 0.5f)).toFloat()) / 2f)
                     renderer.animate(ratio)
                     requestRender()
                 } catch (e: Exception) {
@@ -197,6 +200,10 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
 
     fun setLabelView(label: ChartLabel) {
         this.labelView = label
+    }
+
+    fun setTooltipView(tooltip: ChartTooltip) {
+        this.tooltip = tooltip
     }
 
     fun <T> radius(r: T, unit: CT_Unit = CT_Unit.DP): ChartView {
@@ -230,12 +237,10 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
     }
 
     override fun onFrameChanged() {
-//        plog()
         labelView?.refresh()
     }
 
     override fun setLabelCoords(coords: List<Point?>) {
-//        plog("width", width, "height", height)
         labelView?.updateCoords(coords)
     }
 
@@ -243,50 +248,49 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
     override fun getRtl(): Boolean = rtl
     override fun getTypeface(): Typeface? = typeface
     override fun getFontSize(): Int? = fontSize
+
 //    override fun performClick(): Boolean {
 //        super.performClick()
-//        notifyUser("Chart Changed!")
+//        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 //        return true
 //    }
-//
-//    @Suppress("SameParameterValue")
-//    private fun notifyUser(message: String) {
-////        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-//    }
+
+    private fun positionToIndex(x: Float): Int {
+        return (x * columnCount / width).toInt().let { if (it == columnCount) it - 1 else it }
+    }
 
     override fun onTouchEvent(e: MotionEvent): Boolean {
 //        todo: implement performClick
         val x: Float = e.x
-        val y: Float = e.y
 
         when (e.action) {
-            MotionEvent.ACTION_MOVE -> {
-//                var dx: Float = x - previousX
-//                var dy: Float = y - previousY
-//                if (cornerRadius) {
-//                    renderer.setScale(-dy / height)
-//                } else {
-//                    if (rotate) {
-//                        if (y > height / 2)
-//                            dx *= -1
-//                        if (x < width / 2)
-//                            dy *= -1
-//                        renderer.angle += (dx + dy) * ROTATION_TOUCH_SCALE_FACTOR
-//                    } else {
-//                        renderer.setHVScale(dx / width, -dy / height)
-//                    }
-//                }
-//                requestRender()
+            MotionEvent.ACTION_DOWN -> {
+                isPointerDown = true
+                tooltip?.appearAt(positionToIndex(x))
             }
+            MotionEvent.ACTION_MOVE -> tooltip?.appearAt(positionToIndex(x))
             MotionEvent.ACTION_UP -> {
-//                val coord = renderer.getCoordAt(x, y)
-//                plog("x", x, "y", y, "coord.x", coord.x, "coord.y", coord.y)
+                isPointerDown = false
+                if (!waitingToHide) {
+                    waitingToHide = true
+                    GlobalScope.launch {
+                        Thread.sleep(3000L)
+                        waitingToHide = false
+                        if (!isPointerDown) {
+                            GlobalScope.launch(Main) { tooltip?.disappear() }
+                        }
+                    }
+                }
             }
         }
-//            MotionEvent.ACTION_UP -> performClick()
-//        previousX = x
-//        previousY = y
-//        return true
-        return super.onTouchEvent(e)
+        return true
     }
+
+    override fun setToolTipData(tooltipData: List<Int?>) {
+        GlobalScope.launch(Main) { tooltip?.setToolTipData(this@ChartView, tooltipData) }
+    }
+
+    override fun dataAt(index: Int): CTData? = dataList.getOrNull(index)
+    override fun categoryAt(index: Int): String? = categories.getOrNull(index)
+    override fun seriesCount(): Int = dataList.size
 }

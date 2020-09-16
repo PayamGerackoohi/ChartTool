@@ -1,15 +1,10 @@
 package com.payam1991gr.chart.tool.renderer
 
-import android.annotation.TargetApi
-import android.graphics.Outline
 import android.graphics.Point
 import android.graphics.PointF
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
-import android.os.Build
-import android.view.View
-import android.view.ViewOutlineProvider
 import com.payam1991gr.chart.tool.IRendererParent
 import com.payam1991gr.chart.tool.data.CTData
 import com.payam1991gr.chart.tool.data.CT_Unit
@@ -20,6 +15,7 @@ import java.lang.Exception
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
+//todo: workflow is unambiguous
 class ChartRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSurfaceView.Renderer {
     private var displayRatio: Float = 1f
     private var invDisplayRatio: Float = 1f
@@ -97,37 +93,21 @@ class ChartRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSur
     }
 
     private fun makeLabelCoords() {
-//        plog("width", width, "height", height, "invDisplayRatio", invDisplayRatio)
         val coords = ArrayList<Point?>()
         barMap.forEach { series ->
-            val a = PointF(1f, invDisplayRatio)
-            val b = width / 2f
-            series.forEach {
-                coords.add(((it.fixedCenter()?.apply { y = -y } + a) * b).toInt())
-//                coords.add(((PointF() + a) * b)?.apply { y = height - y })
-//                coords.add(((it.fixedCenter()?.apply { plog("fixedCenter.x", x, "fixedCenter.y", y) } + a) * b).toInt()?.apply { y = height - y })
-            }
-//            series.forEach { coords.add(((it.fixedCenter()?.apply { y = y } + a) * b).toInt()) }
+            series.forEach { coords.add(nativeToAndroidCoord(it.fixedCenter())) }
         }
         parent.setLabelCoords(coords)
-//            val coords = ArrayList<ArrayList<Point?>>()
-//            barMap.forEach { series ->
-//                val list = ArrayList<Point?>()
-//                series.forEach { list.add((it.fixedCenter() * PointF(width, height)).toInt()) }
-//                coords.add(list)
-//            }
-//            parent.setLabelCoords(coords)
     }
 
     override fun onDrawFrame(unused: GL10) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
-        plog("isReady", isReady, "onNewData", onNewData)
         if (!isReady)
             return
-//        plog()
         if (onNewData) {
             onNewData = false
             barMap.clear()
+            val tooltipData = ArrayList<Int?>()
             (0 until count).forEach { _ -> barMap.add(ArrayList()) }
             (0 until count).forEach { column ->
                 var positiveHeight = 0f
@@ -144,6 +124,7 @@ class ChartRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSur
                             val bar = Bar(this@ChartRenderer).apply {
                                 apply(PointF(xs, ys), PointF(xe, ye), radius, series.color)
                                 fixPoints()
+                                fixApply(0f, 0f)
                             }
                             barMap[row].add(bar)
                             negativeBarList.add(bar)
@@ -154,14 +135,17 @@ class ChartRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSur
                             val bar = Bar(this@ChartRenderer).apply {
                                 apply(PointF(xs, ys), PointF(xe, ye), radius, series.color)
                                 fixPoints()
+                                fixApply(0f, 0f)
                             }
                             barMap[row].add(bar)
                             positiveBarList.add(bar)
                         }
                     }
                 }
-                makeLabelCoords()
+                tooltipData.add(nativeToAndroidCoordY(base + positiveHeight))
             }
+            parent.setToolTipData(tooltipData)
+            makeLabelCoords()
         } else {
 //        Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, -invDisplayRatio, 0f, 0f, 0f, 0f, 1.0f, 0.0f)
 //        Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
@@ -177,26 +161,17 @@ class ChartRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSur
 
     override fun getShaderCode(shaderRes: Int): String = parent.getShaderCode(shaderRes)
 
-    //    fun drawBaseLine(height: Float, min: Int, max: Int) {
     fun drawBaseLine(min: Int, max: Int) {
-//        plog()
         this.min = min
         this.max = max
-//        val h = invDisplayRatio * (2 * height - 1)
         val h = -invDisplayRatio
         scale = 2 * invDisplayRatio / (max - min)
-//        scale = (invDisplayRatio - h) / (max - min)
         base = h - scale * min
-//        plog("invDisplayRatio", invDisplayRatio, "scale", scale, "base", base)
-//        plog("base", base, "scale", scale, "h", h)
-//        plog("displayMinDim", displayMinDim)
         val dy = invDisplayRatio / 200f
         baseLine?.apply(PointF(-1f, base - dy), PointF(1f, base + dy), GLColor.LightGray)
-//        scale *= .95f
     }
 
     fun consumeData(dataList: List<CTData>) {
-//        plog()
         this.dataList = dataList
         onNewData = true
         isReady = true
@@ -229,7 +204,14 @@ class ChartRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSur
     }
 
     override fun highQuality(): Boolean = highQuality
-//    fun getCoordAt(x: Float, y: Float): PointF {
-//        return PointF(x / width, y / height)
-//    }
+
+    private fun nativeToAndroidCoord(point: PointF?): Point? {
+        val a = PointF(1f, invDisplayRatio)
+        val b = width / 2f
+        return ((point?.apply { y = -y } + a) * b).toInt()
+    }
+
+    private fun nativeToAndroidCoordY(y: Float?): Int? {
+        return y?.let { ((invDisplayRatio - y) * width / 2f).toInt() }
+    }
 }

@@ -4,6 +4,7 @@ import android.opengl.GLES20
 import com.payam1991gr.chart.tool.renderer.IShapeParent
 import java.nio.FloatBuffer
 
+// todo: implement it
 class Triangle(parent: IShapeParent) : BaseShape(parent) {
     companion object {
         private const val COORDS_PER_VERTEX = 3

@@ -6,6 +6,7 @@ import com.payam1991gr.chart.tool.util.GLColor
 import com.payam1991gr.chart.tool.util.div
 import com.payam1991gr.chart.tool.util.lessThan
 import com.payam1991gr.chart.tool.util.plus
+import kotlin.math.sin
 import kotlin.math.sqrt
 
 class Bar(parent: IShapeParent) : BaseShape(parent) {
@@ -140,13 +141,8 @@ class Bar(parent: IShapeParent) : BaseShape(parent) {
     }
 
     fun fixApply(ratio: Float, base: Float) {
-//        (1 - ratio).let { ratio -> sqrt(1 - ratio * ratio) }.let { r ->
-        sqrt(ratio).let { r ->
-            fixStartPoint?.let { start = PointF(it.x, base + r * (it.y - base)) }
-            fixEndPoint?.let { end = PointF(it.x, base + r * (it.y - base)) }
-        }
-//        fixStartPoint?.let { start = PointF(it.x, base + ratio * (it.y - base)) }
-//        fixEndPoint?.let { end = PointF(it.x, base + ratio * (it.y - base)) }
+        fixStartPoint?.let { start = PointF(it.x, base + ratio * (it.y - base)) }
+        fixEndPoint?.let { end = PointF(it.x, base + ratio * (it.y - base)) }
         apply(start, end, radius, color)
     }
 

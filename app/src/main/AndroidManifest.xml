@@ -2,10 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.payam1991gr.chart.tool.app">
 
-    <uses-feature
-        android:glEsVersion="0x00020000"
-        android:required="true" />
-
     <application
         android:allowBackup="false"
         android:icon="@mipmap/chart_launcher"

@@ -20,4 +20,8 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep com.payam1991gr.chart.tool.ChartView
+-keep class com.payam1991gr.chart.tool.ChartView { public <methods>; public <fields>; }
+-keep class com.payam1991gr.chart.tool.ChartLegend { public <methods>; public <fields>; }
+-keep class com.payam1991gr.chart.tool.ChartCategory { public <methods>; public <fields>; }
+-keep class com.payam1991gr.chart.tool.ChartLabel { public <methods>; public <fields>; }
+-keep class com.payam1991gr.chart.tool.ChartTooltip { public <methods>; public <fields>; }

@@ -11,6 +11,7 @@ import com.payam1991gr.chart.tool.util.toRadians
 import java.nio.FloatBuffer
 import kotlin.math.*
 
+// todo: needs optimization
 class Arc(private val parent: IShapeParent) : BaseShape(parent) {
     companion object {
         private const val COORDS_PER_VERTEX = 3

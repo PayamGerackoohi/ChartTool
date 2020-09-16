@@ -8,6 +8,7 @@ import com.payam1991gr.chart.tool.util.lessThan
 import com.payam1991gr.chart.tool.util.plog
 import java.nio.*
 
+// todo: needs optimization
 class Rectangle(parent: IShapeParent) : BaseShape(parent) {
     companion object {
         private const val COORDS_PER_VERTEX = 3

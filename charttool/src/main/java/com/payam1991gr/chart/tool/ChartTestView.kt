@@ -95,4 +95,7 @@ class ChartTestView : GLSurfaceView, IRendererParent {
 
     override fun onFrameChanged() {
     }
+
+    override fun setToolTipData(tooltipData: List<Int?>) {
+    }
 }
