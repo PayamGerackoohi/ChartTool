@@ -15,17 +15,23 @@ import java.lang.Exception
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-//todo: workflow is unambiguous
+//todo: workflow is ambiguous
+//todo: refreshing the chart, gradually slows down the animation
 class ChartRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSurfaceView.Renderer {
     private var displayRatio: Float = 1f
     private var invDisplayRatio: Float = 1f
     private val vPMatrix = FloatArray(16)
     private val projectionMatrix = FloatArray(16)
     private val viewMatrix = FloatArray(16)
+    @Volatile
     private var baseLine: Rectangle? = null
+    @Volatile
     private var width: Int = 0
+    @Volatile
     private var height: Int = 0
+    @Volatile
     private var radiusUnit = CT_Unit.Native
+    @Volatile
     private var radius = .025f
         get() {
             return when (radiusUnit) {
@@ -38,11 +44,15 @@ class ChartRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSur
         }
 
     private val barMap = ArrayList<ArrayList<Bar>>()
-    private var dataList: List<CTData>? = null
-    private var onNewData = false
-    private var isReady = false
-    var rtl = false
 
+    @Volatile
+    private var dataList: List<CTData>? = null
+    @Volatile
+    private var onNewData = false
+    @Volatile
+    private var isReady = false
+    @Volatile
+    var rtl = false
     @Volatile
     private var scale = 1f
     @Volatile
@@ -65,31 +75,39 @@ class ChartRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSur
     private var base = 0f
 
     override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
-        GLES20.glClearColor(1f, 1f, 1f, 1f)
+        try {
+            GLES20.glClearColor(1f, 1f, 1f, 1f)
+        } catch (e: Exception) {
+            plog("Error", e.message ?: "")
+        }
     }
 
     override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
+        try {
 //        plog("width", width, "height", height)
-        this.width = width
-        this.height = height
-        GLES20.glViewport(0, 0, width, height)
-        displayRatio = width.toFloat() / height.toFloat()
-        invDisplayRatio = 1 / displayRatio
-        displayMinDim = if (width < height) width else height
-        (invDisplayRatio / 2f).let { Matrix.frustumM(projectionMatrix, 0, .5f, -.5f, -it, it, it, invDisplayRatio * 2f) }
+            this.width = width
+            this.height = height
+            GLES20.glViewport(0, 0, width, height)
+            displayRatio = width.toFloat() / height.toFloat()
+            invDisplayRatio = 1 / displayRatio
+            displayMinDim = if (width < height) width else height
+            (invDisplayRatio / 2f).let { Matrix.frustumM(projectionMatrix, 0, .5f, -.5f, -it, it, it, invDisplayRatio * 2f) }
 //        plog("invDisplayRatio", invDisplayRatio)
 
-        baseLine = Rectangle(this)
+            baseLine = Rectangle(this)
 
-        Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, -invDisplayRatio, 0f, 0f, 0f, 0f, 1.0f, 0.0f)
-        Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
+            Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, -invDisplayRatio, 0f, 0f, 0f, 0f, 1.0f, 0.0f)
+            Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
 
-        if (isReady) {
-            drawBaseLine(min, max)
-            onNewData = true
-            onDrawFrame(unused)
+            if (isReady) {
+                drawBaseLine(min, max)
+                onNewData = true
+                onDrawFrame(unused)
+            }
+            parent.onFrameChanged()
+        } catch (e: Exception) {
+            plog("Error", e.message ?: "")
         }
-        parent.onFrameChanged()
     }
 
     private fun makeLabelCoords() {
@@ -101,61 +119,61 @@ class ChartRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSur
     }
 
     override fun onDrawFrame(unused: GL10) {
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
-        if (!isReady)
-            return
-        if (onNewData) {
-            onNewData = false
-            barMap.clear()
-            val tooltipData = ArrayList<Int?>()
-            (0 until count).forEach { _ -> barMap.add(ArrayList()) }
-            (0 until count).forEach { column ->
-                var positiveHeight = 0f
-                var negativeHeight = 0f
-                val stepMargin = .15f
-                val xs = (column + stepMargin) * step - 1
-                val xe = (column + 1 - stepMargin) * step - 1
-                dataList?.forEachIndexed { row, series ->
-                    series.values.getOrNull(column)?.let { value ->
-                        if (value < 0) {
-                            val ye = base + negativeHeight
-                            negativeHeight += scale * value
-                            val ys = base + negativeHeight
-                            val bar = Bar(this@ChartRenderer).apply {
-                                apply(PointF(xs, ys), PointF(xe, ye), radius, series.color)
-                                fixPoints()
-                                fixApply(0f, 0f)
+        try {
+            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+            if (!isReady)
+                return
+            if (onNewData) {
+                onNewData = false
+                barMap.clear()
+                val tooltipData = ArrayList<Int?>()
+                (0 until count).forEach { _ -> barMap.add(ArrayList()) }
+                (0 until count).forEach { column ->
+                    var positiveHeight = 0f
+                    var negativeHeight = 0f
+                    val stepMargin = .15f
+                    val xs = (column + stepMargin) * step - 1
+                    val xe = (column + 1 - stepMargin) * step - 1
+                    dataList?.forEachIndexed { row, series ->
+                        series.values.getOrNull(column)?.let { value ->
+                            if (value < 0) {
+                                val ye = base + negativeHeight
+                                negativeHeight += scale * value
+                                val ys = base + negativeHeight
+                                val bar = Bar(this@ChartRenderer).apply {
+                                    apply(PointF(xs, ys), PointF(xe, ye), radius, series.color)
+                                    fixPoints()
+                                    fixApply(0f, 0f)
+                                }
+                                barMap[row].add(bar)
+                                negativeBarList.add(bar)
+                            } else {
+                                val ys = base + positiveHeight
+                                positiveHeight += scale * value
+                                val ye = base + positiveHeight
+                                val bar = Bar(this@ChartRenderer).apply {
+                                    apply(PointF(xs, ys), PointF(xe, ye), radius, series.color)
+                                    fixPoints()
+                                    fixApply(0f, 0f)
+                                }
+                                barMap[row].add(bar)
+                                positiveBarList.add(bar)
                             }
-                            barMap[row].add(bar)
-                            negativeBarList.add(bar)
-                        } else {
-                            val ys = base + positiveHeight
-                            positiveHeight += scale * value
-                            val ye = base + positiveHeight
-                            val bar = Bar(this@ChartRenderer).apply {
-                                apply(PointF(xs, ys), PointF(xe, ye), radius, series.color)
-                                fixPoints()
-                                fixApply(0f, 0f)
-                            }
-                            barMap[row].add(bar)
-                            positiveBarList.add(bar)
                         }
                     }
+                    tooltipData.add(nativeToAndroidCoordY(base + positiveHeight))
                 }
-                tooltipData.add(nativeToAndroidCoordY(base + positiveHeight))
-            }
-            parent.setToolTipData(tooltipData)
-            makeLabelCoords()
-        } else {
+                parent.setToolTipData(tooltipData)
+                makeLabelCoords()
+            } else {
 //        Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, -invDisplayRatio, 0f, 0f, 0f, 0f, 1.0f, 0.0f)
 //        Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
-            try {
                 positiveBarList.forEach { it.draw(vPMatrix) }
                 negativeBarList.forEach { it.draw(vPMatrix) }
-            } catch (e: Exception) {
-                plog("Error", e.message ?: "?")
+                baseLine?.draw(vPMatrix)
             }
-            baseLine?.draw(vPMatrix)
+        } catch (e: Exception) {
+            plog("Error", e.message ?: "?")
         }
     }
 

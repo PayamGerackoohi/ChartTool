@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
 import com.payam1991gr.chart.tool.app.R
 import com.payam1991gr.chart.tool.app.ui.base.BasePage
 import com.payam1991gr.chart.tool.data.CTData
@@ -23,8 +24,10 @@ class ChartTestPage : BasePage() {
     }
 
     private fun setupUI() {
-        chart1Test()
-        chart2Test()
+        Handler().postDelayed({
+            chart1Test()
+            chart2Test()
+        }, 1000)
     }
 
     private fun chart1Test() {
@@ -122,6 +125,11 @@ class ChartTestPage : BasePage() {
     }
 
     private fun chart2Test() {
+        chart2.setLegendView(chart2Legend)
+        chart2.setCategoryView(chart2Category)
+        chart2.setLabelView(chart2Label)
+        chart2.setTooltipView(chart2Tooltip)
+
         chart2
             .data(
                 CTData()

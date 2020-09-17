@@ -16,12 +16,25 @@ import com.payam1991gr.chart.tool.util.DisplayUtils
 import com.payam1991gr.chart.tool.util.getRawResString
 import com.payam1991gr.chart.tool.util.plog
 import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import kotlin.math.sin
 
-//todo: workflow is unambiguous
+// todo: workflow is ambiguous
+// todo: add color string parser
+// todo: make public classes as protocols or interfaces
+// todo: refactoring
+// todo: test
+// todo: add animation
+// todo: labels should accept vararg, array and ResInts
+// todo: categories should accept vararg, array and ResInts
+// todo: typeface must be either general or section specific
+// todo: proguard keep also keeps comments and private data
+// todo: trim data deficiency
+// todo: put all the input data in a settings object and after show use them all
+// todo: make lib customizable: yAxisGridLineWidth, legendEnabled, dataLabelsEnabled, ...
 @Suppress("MemberVisibilityCanBePrivate")
 class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
     constructor(context: Context) : super(context)
@@ -29,7 +42,8 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
 
     companion object {
         //        private const val ROTATION_TOUCH_SCALE_FACTOR: Float = 0.0625f
-        private const val ANIMATION_DURATION = 250L
+        private const val ANIMATION_DURATION = 150L
+//        private const val ANIMATION_DURATION = 250L
     }
 
     private var dataList = ArrayList<CTData>()
@@ -76,7 +90,6 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
     }
 
     private fun getHeightLazy() {
-        categoryView?.setCategories(this, categories)
         Handler().postDelayed({
             if (height > 0)
                 startPlot()
@@ -86,6 +99,7 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
     }
 
     private fun startPlot() {
+        categoryView?.setCategories(this, categories)
         gatherResources()
         drawBaseLine()
         // todo: drawValueBar()
@@ -109,11 +123,19 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
     }
 
     private fun drawBars() {
-        renderer.consumeData(dataList)
-        GlobalScope.launch {
-            // todo: decrease this delay
-            Thread.sleep(250L)
-            animateChart()
+        try {
+            renderer.consumeData(dataList)
+            GlobalScope.launch {
+                try {
+                    // todo: decrease this delay
+                    Thread.sleep(250L)
+                    animateChart()
+                } catch (e: Exception) {
+                    plog("Error", e.message ?: "")
+                }
+            }
+        } catch (e: Exception) {
+            plog("Error", e.message ?: "")
         }
     }
 
@@ -149,8 +171,12 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
             plog("No Data")
             // todo: show user
         } else {
-            renderer.drawBaseLine(min, max)
-            renderer.count = count
+            try {
+                renderer.drawBaseLine(min, max)
+                renderer.count = count
+            } catch (e: Exception) {
+                plog("Error", e.message ?: "")
+            }
         }
     }
 
@@ -164,28 +190,32 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
         legendView?.appear()
         categoryView?.appear()
         GlobalScope.launch {
-            val timeStep = 1L // as fast as you can!
+            try {
+                val timeStep = 1L // as fast as you can!
 //            val timeStep = 17L // 60 fps
-            var time = 0L
-            while (time < ANIMATION_DURATION) {
-                Thread.sleep(timeStep)
-                var ratio = time / ANIMATION_DURATION.toFloat()
+                var time = 0L
+                while (time < ANIMATION_DURATION) {
+                    Thread.sleep(timeStep)
+                    var ratio = time / ANIMATION_DURATION.toFloat()
 //                plog("ratio", ratio, "time", time)
-                try {
-                    // (1 - ratio).let { ratio -> sqrt(1 - ratio * ratio) }
-                    // sqrt(ratio)
-                    ratio = ((1 - sin(Math.PI * (ratio + 0.5f)).toFloat()) / 2f)
-                    renderer.animate(ratio)
-                    requestRender()
-                } catch (e: Exception) {
-                    plog("Error", e.message ?: "?")
+                    try {
+                        // (1 - ratio).let { ratio -> sqrt(1 - ratio * ratio) }
+                        // sqrt(ratio)
+                        ratio = ((1 - sin(Math.PI * (ratio + 0.5f)).toFloat()) / 2f)
+                        renderer.animate(ratio)
+                        requestRender()
+                    } catch (e: Exception) {
+                        plog("Error", e.message ?: "?")
+                    }
+                    time += timeStep
                 }
-                time += timeStep
+                renderer.animate(1f)
+                requestRender()
+                animating = false
+                labelView?.appear()
+            } catch (e: Exception) {
+                plog("Error", e.message ?: "")
             }
-            renderer.animate(1f)
-            requestRender()
-            animating = false
-            labelView?.appear()
         }
     }
 
@@ -206,18 +236,30 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
     }
 
     fun <T> radius(r: T, unit: CT_Unit = CT_Unit.DP): ChartView {
-        renderer.radius(r, unit)
+        try {
+            renderer.radius(r, unit)
+        } catch (e: Exception) {
+            plog("Error", e.message ?: "")
+        }
         return this
     }
 
     fun highQuality(high: Boolean = true): ChartView {
-        renderer.highQuality = high
+        try {
+            renderer.highQuality = high
+        } catch (e: Exception) {
+            plog("Error", e.message ?: "")
+        }
         return this
     }
 
     fun rtl(rtl: Boolean = true): ChartView {
-        renderer.rtl = true
-        this.rtl = rtl
+        try {
+            renderer.rtl = true
+            this.rtl = rtl
+        } catch (e: Exception) {
+            plog("Error", e.message ?: "")
+        }
         return this
     }
 
@@ -276,7 +318,13 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
                         Thread.sleep(3000L)
                         waitingToHide = false
                         if (!isPointerDown) {
-                            GlobalScope.launch(Main) { tooltip?.disappear() }
+                            GlobalScope.launch(Main) {
+                                try {
+                                    tooltip?.disappear()
+                                } catch (e: Exception) {
+                                    plog("Error", e.message ?: "")
+                                }
+                            }
                         }
                     }
                 }
@@ -286,7 +334,13 @@ class ChartView : GLSurfaceView, IRendererParent, ICTWidgetParent {
     }
 
     override fun setToolTipData(tooltipData: List<Int?>) {
-        GlobalScope.launch(Main) { tooltip?.setToolTipData(this@ChartView, tooltipData) }
+        GlobalScope.launch(Main) {
+            try {
+                tooltip?.setToolTipData(this@ChartView, tooltipData)
+            } catch (e: Exception) {
+                plog("Error", e.message ?: "")
+            }
+        }
     }
 
     override fun dataAt(index: Int): CTData? = dataList.getOrNull(index)

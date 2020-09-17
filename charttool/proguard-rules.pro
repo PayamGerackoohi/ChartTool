@@ -20,9 +20,18 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep,allowoptimization class com.payam1991gr.chart.tool.ChartView { public *; }
--keep,allowoptimization class com.payam1991gr.chart.tool.ChartLegend { public *; }
--keep,allowoptimization class com.payam1991gr.chart.tool.ChartCategory { public *; }
--keep,allowoptimization class com.payam1991gr.chart.tool.ChartLabel { public *; }
--keep,allowoptimization class com.payam1991gr.chart.tool.ChartTooltip { public *; }
--keep,allowoptimization class com.payam1991gr.chart.tool.data.** { public *; }
+-keepclasseswithmembers class com.payam1991gr.chart.tool.ChartView { public *; }
+-keepclasseswithmembers class com.payam1991gr.chart.tool.ChartLegend { public *; }
+-keepclasseswithmembers class com.payam1991gr.chart.tool.ChartCategory { public *; }
+-keepclasseswithmembers class com.payam1991gr.chart.tool.ChartLabel { public *; }
+-keepclasseswithmembers class com.payam1991gr.chart.tool.ChartTooltip { public *; }
+-keepclasseswithmembers class com.payam1991gr.chart.tool.data.** { public *; }
+-keepclasseswithmembers class com.payam1991gr.chart.tool.ICTWidgetParent { *; }
+-keepclasseswithmembers class com.payam1991gr.chart.tool.IRendererParent { *; }
+
+#-keep,allowoptimization class com.payam1991gr.chart.tool.ChartView { public *; }
+#-keep,allowoptimization class com.payam1991gr.chart.tool.ChartLegend { public *; }
+#-keep,allowoptimization class com.payam1991gr.chart.tool.ChartCategory { public *; }
+#-keep,allowoptimization class com.payam1991gr.chart.tool.ChartLabel { public *; }
+#-keep,allowoptimization class com.payam1991gr.chart.tool.ChartTooltip { public *; }
+#-keep,allowoptimization class com.payam1991gr.chart.tool.data.** { public *; }

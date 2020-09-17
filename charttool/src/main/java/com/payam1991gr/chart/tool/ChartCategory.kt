@@ -37,6 +37,7 @@ class ChartCategory : ViewGroup {
     }
 
     private fun buildCategories() {
+        removeAllViews()
         categories.forEach { category ->
             val tv = AppCompatTextView(context).apply {
                 text = context.getString(R.string.fa_template).format(category)

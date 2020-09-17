@@ -1,83 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
-    android:orientation="vertical">
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="@color/white"
+android:orientation="vertical">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/glhm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.5" />
+<androidx.constraintlayout.widget.Guideline
+    android:id="@+id/glhm"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    app:layout_constraintGuide_percent="0.5" />
 
-    <com.payam1991gr.chart.tool.ChartLegend
-        android:id="@+id/chart1Legend"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/glhm"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+<com.payam1991gr.chart.tool.ChartLegend
+    android:id="@+id/chart1Legend"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginBottom="8dp"
+    app:layout_constraintBottom_toBottomOf="@+id/glhm"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent" />
 
-    <com.payam1991gr.chart.tool.ChartCategory
-        android:id="@+id/chart1Category"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/chart1Legend"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+<com.payam1991gr.chart.tool.ChartCategory
+    android:id="@+id/chart1Category"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    app:layout_constraintBottom_toTopOf="@+id/chart1Legend"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent" />
 
-    <com.payam1991gr.chart.tool.ChartView
-        android:id="@+id/chart1"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginRight="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/chart1Category"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+<com.payam1991gr.chart.tool.ChartView
+    android:id="@+id/chart1"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginTop="16dp"
+    android:layout_marginRight="16dp"
+    app:layout_constraintBottom_toTopOf="@+id/chart1Category"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
 
-    <com.payam1991gr.chart.tool.ChartLabel
-        android:id="@+id/chart1Label"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:clickable="false"
-        android:focusable="false"
-        app:layout_constraintBottom_toBottomOf="@+id/chart1"
-        app:layout_constraintLeft_toLeftOf="@+id/chart1"
-        app:layout_constraintRight_toRightOf="@+id/chart1"
-        app:layout_constraintTop_toTopOf="@+id/chart1" />
+<com.payam1991gr.chart.tool.ChartLabel
+    android:id="@+id/chart1Label"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:clickable="false"
+    android:focusable="false"
+    app:layout_constraintBottom_toBottomOf="@+id/chart1"
+    app:layout_constraintLeft_toLeftOf="@+id/chart1"
+    app:layout_constraintRight_toRightOf="@+id/chart1"
+    app:layout_constraintTop_toTopOf="@+id/chart1" />
 
-    <com.payam1991gr.chart.tool.ChartTooltip
-        android:id="@+id/chart1Tooltip"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:clickable="false"
-        android:focusable="false"
-        app:layout_constraintBottom_toBottomOf="@+id/chart1"
-        app:layout_constraintLeft_toLeftOf="@+id/chart1"
-        app:layout_constraintRight_toRightOf="@+id/chart1"
-        app:layout_constraintTop_toTopOf="@+id/chart1" />
+<com.payam1991gr.chart.tool.ChartTooltip
+    android:id="@+id/chart1Tooltip"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:clickable="false"
+    android:focusable="false"
+    app:layout_constraintBottom_toBottomOf="@+id/chart1"
+    app:layout_constraintLeft_toLeftOf="@+id/chart1"
+    app:layout_constraintRight_toRightOf="@+id/chart1"
+    app:layout_constraintTop_toTopOf="@+id/chart1" />
 
-    <com.payam1991gr.chart.tool.ChartView
-        android:id="@+id/chart2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/glhm" />
+<com.payam1991gr.chart.tool.ChartLegend
+    android:id="@+id/chart2Legend"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginBottom="16dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent" />
+
+<com.payam1991gr.chart.tool.ChartCategory
+    android:id="@+id/chart2Category"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    app:layout_constraintBottom_toTopOf="@+id/chart2Legend"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent" />
+
+<com.payam1991gr.chart.tool.ChartView
+    android:id="@+id/chart2"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginRight="16dp"
+    app:layout_constraintBottom_toTopOf="@+id/chart2Category"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/glhm" />
+
+<com.payam1991gr.chart.tool.ChartLabel
+    android:id="@+id/chart2Label"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:clickable="false"
+    android:focusable="false"
+    app:layout_constraintBottom_toBottomOf="@+id/chart2"
+    app:layout_constraintLeft_toLeftOf="@+id/chart2"
+    app:layout_constraintRight_toRightOf="@+id/chart2"
+    app:layout_constraintTop_toTopOf="@+id/chart2" />
+
+<com.payam1991gr.chart.tool.ChartTooltip
+    android:id="@+id/chart2Tooltip"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:clickable="false"
+    android:focusable="false"
+    app:layout_constraintBottom_toBottomOf="@+id/chart2"
+    app:layout_constraintLeft_toLeftOf="@+id/chart2"
+    app:layout_constraintRight_toRightOf="@+id/chart2"
+    app:layout_constraintTop_toTopOf="@+id/chart2" />
 </androidx.constraintlayout.widget.ConstraintLayout>
