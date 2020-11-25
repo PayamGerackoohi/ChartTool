@@ -24,10 +24,8 @@ class ChartTestPage : BasePage() {
     }
 
     private fun setupUI() {
-        Handler().postDelayed({
-            chart1Test()
-            chart2Test()
-        }, 1000)
+        chart1Test()
+        chart2Test()
     }
 
     private fun chart1Test() {

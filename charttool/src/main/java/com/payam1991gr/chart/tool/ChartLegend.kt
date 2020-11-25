@@ -12,8 +12,10 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.ViewCompat
 import com.payam1991gr.chart.tool.util.DisplayUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
 class ChartLegend : ViewGroup {
@@ -32,7 +34,22 @@ class ChartLegend : ViewGroup {
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int) : super(
+        context,
+        attrs,
+        defStyleAttr,
+        defStyleRes
+    )
+
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val mainScope = CoroutineScope(SupervisorJob() + Main)
+    private fun io(block: suspend CoroutineScope.() -> Unit) = scope.launch { block() }
+    private fun ui(block: suspend CoroutineScope.() -> Unit) = mainScope.launch {
+        try {
+            block()
+        } catch (e: Exception) {
+        }
+    }
 
     fun setLegends(holder: ICTWidgetParent, list: List<String>, colors: List<Int>) {
         this.holder = holder
@@ -76,15 +93,18 @@ class ChartLegend : ViewGroup {
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         // #################################### < Weighted Space Distribution > ####################################
+        val count = childCount
+        val hCount = count / 2
         val rtl = holder?.getRtl() == true
         val edgeWeight = 1.5f
 
-        val count = childCount
         var contentWidth = 0
         for (i in 0 until count) {
             contentWidth += getChildAt(i).measuredWidth
         }
-        val quota = 2 * edgeWeight + (count / 2) - 1
+        val circleMargin = DisplayUtils.convertDpToPixel(8)
+        contentWidth += hCount * circleMargin
+        val quota = 2 * edgeWeight + hCount - 1
 
         val totalFreeSpace = measuredWidth - contentWidth
         // todo: check if totalFreeSpace > 0
@@ -95,7 +115,6 @@ class ChartLegend : ViewGroup {
         val centerY = measuredHeight / 2
         val circleSize = DisplayUtils.convertDpToPixel(CIRCLE_SIZE)
         val hCircleSize = circleSize / 2
-        val circleMargin = DisplayUtils.convertDpToPixel(8)
         val range = if (rtl)
             (count - 2) downTo 0 step 2
         else
@@ -106,14 +125,17 @@ class ChartLegend : ViewGroup {
             val w = child.measuredWidth
             val h = child.measuredHeight
             val hh = h / 2
-//            plog("left", startX, "top", centerY - hh, "right", startX + w, "bottom", centerY + hh)
-            child.layout(startX, centerY - hh, startX + w, centerY + hh)
-
-            if (rtl)
-                colorView.layout(startX + w + circleMargin, centerY - hCircleSize, startX + w + circleSize + circleMargin, centerY + hCircleSize)
-            else
-                colorView.layout(startX - circleSize - circleMargin, centerY - hCircleSize, startX - circleMargin, centerY + hCircleSize)
-            startX += w + innerSpace
+            if (rtl) {
+                child.layout(startX, centerY - hh, startX + w, centerY + hh)
+                startX += w + circleMargin
+                colorView.layout(startX, centerY - hCircleSize, startX + circleSize, centerY + hCircleSize)
+                startX += circleSize + innerSpace
+            } else {
+                colorView.layout(startX, centerY - hCircleSize, startX + circleSize, centerY + hCircleSize)
+                startX += circleSize + circleMargin
+                child.layout(startX, centerY - hh, startX + w, centerY + hh)
+                startX += w + innerSpace
+            }
         }
         // #################################### </ Weighted Space Distribution > ####################################
         // #################################### < All The Same > ####################################
@@ -182,13 +204,13 @@ class ChartLegend : ViewGroup {
     }
 
     fun appear() {
-        GlobalScope.launch(Main) {
+        ui {
             alpha = 0f
             animate().alpha(1f).setDuration(1000L).start()
         }
     }
 
     fun disappear() {
-        GlobalScope.launch(Main) { alpha = 0f }
+        ui { alpha = 0f }
     }
 }

@@ -6,17 +6,15 @@ import com.payam1991gr.chart.tool.util.GLColor
 import com.payam1991gr.chart.tool.util.div
 import com.payam1991gr.chart.tool.util.lessThan
 import com.payam1991gr.chart.tool.util.plus
-import kotlin.math.sin
-import kotlin.math.sqrt
 
 class Bar(parent: IShapeParent) : BaseShape(parent) {
     private var start = PointF()
     private var end = PointF()
     private var radius = 0f
     private var color = GLColor.Black
-    var fixStartPoint: PointF? = null
-    var fixEndPoint: PointF? = null
-    var basePoint: PointF? = null
+    private var fixStartPoint: PointF? = null
+    private var fixEndPoint: PointF? = null
+//    var basePoint: PointF? = null
 
     private val rectangle1 = Rectangle(parent)
     private val rectangle2 = Rectangle(parent)
@@ -41,9 +39,8 @@ class Bar(parent: IShapeParent) : BaseShape(parent) {
             val yd = ye - ys
             val xsd = xs + r
             val xed = xe - r
-            val dy = r
-            val ysd = ys + dy
-            val yed = ye - dy
+            val ysd = ys + r
+            val yed = ye - r
             val ym = (ye + ys) / 2f
             val minXRad = xd / 2
             val pr = r / minXRad

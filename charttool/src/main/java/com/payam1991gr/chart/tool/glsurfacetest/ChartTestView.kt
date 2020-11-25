@@ -1,14 +1,13 @@
-package com.payam1991gr.chart.tool
+package com.payam1991gr.chart.tool.glsurfacetest
 
 import android.content.Context
 import android.graphics.Point
-import android.graphics.PointF
 import android.opengl.GLSurfaceView
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.Toast
 import androidx.annotation.RawRes
-import com.payam1991gr.chart.tool.renderer.ChartTestRenderer
+import com.payam1991gr.chart.tool.IRendererParent
 import com.payam1991gr.chart.tool.util.getRawResString
 
 class ChartTestView : GLSurfaceView, IRendererParent {

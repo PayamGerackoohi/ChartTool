@@ -3,6 +3,7 @@ package com.payam1991gr.chart.tool.app.ui.home
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.payam1991gr.chart.tool.app.R
+import com.payam1991gr.chart.tool.app.ui.animationtest.AnimationTestPage
 import com.payam1991gr.chart.tool.app.ui.bartest.BarTestPage
 import com.payam1991gr.chart.tool.app.ui.charttest.ChartTestPage
 
@@ -12,7 +13,7 @@ class HomePage : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.page_home)
-        openChartTestPage()
+//        openChartTestPage()
 //        openBarTestPage()
         setupUI()
     }
@@ -20,6 +21,15 @@ class HomePage : AppCompatActivity() {
     private fun setupUI() {
         setupChartTestButton()
         setupBarTestButton()
+        setupAnimationTestButton()
+    }
+
+    private fun setupAnimationTestButton() {
+        animationTestButton.setOnClickListener { openAnimationPage() }
+    }
+
+    private fun openAnimationPage() {
+        startActivity(AnimationTestPage.instance(this))
     }
 
     private fun setupChartTestButton() {

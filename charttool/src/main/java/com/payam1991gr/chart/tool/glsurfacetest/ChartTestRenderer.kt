@@ -1,22 +1,23 @@
-package com.payam1991gr.chart.tool.renderer
+package com.payam1991gr.chart.tool.glsurfacetest
 
 import android.graphics.PointF
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
 import com.payam1991gr.chart.tool.IRendererParent
+import com.payam1991gr.chart.tool.renderer.BaseGLSurfaceRenderer
 import com.payam1991gr.chart.tool.shape.Bar
 import com.payam1991gr.chart.tool.util.GLColor
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class ChartTestRenderer(private val parent: IRendererParent) : BaseRenderer(), GLSurfaceView.Renderer {
+class ChartTestRenderer(private val parent: IRendererParent) : BaseGLSurfaceRenderer(), GLSurfaceView.Renderer {
     private var displayRatio: Float = 1f
     private var invDisplayRatio: Float = 1f
     private val vPMatrix = FloatArray(16)
     private val projectionMatrix = FloatArray(16)
     private val viewMatrix = FloatArray(16)
-    private lateinit var bar1: Bar
+    private lateinit var bar: Bar
     private val rotationMatrix = FloatArray(16)
 
     @Volatile
@@ -47,8 +48,8 @@ class ChartTestRenderer(private val parent: IRendererParent) : BaseRenderer(), G
         displayMinDim = if (width < height) width else height
         (invDisplayRatio / 2f).let { Matrix.frustumM(projectionMatrix, 0, .5f, -.5f, -it, it, it, invDisplayRatio * 2f) }
 
-        bar1 = Bar(this)
-        bar1.apply(start, end, scale, color)
+        bar = Bar(this)
+        bar.apply(start, end, scale, color)
     }
 
     override fun onDrawFrame(unused: GL10) {
@@ -58,7 +59,7 @@ class ChartTestRenderer(private val parent: IRendererParent) : BaseRenderer(), G
         Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
         Matrix.setRotateM(rotationMatrix, 0, angle, 0f, 0f, -1.0f)
         Matrix.multiplyMM(matrix, 0, vPMatrix, 0, rotationMatrix, 0)
-        bar1.draw(matrix)
+        bar.draw(matrix)
     }
 
     fun setScale(diff: Float) {
@@ -67,7 +68,7 @@ class ChartTestRenderer(private val parent: IRendererParent) : BaseRenderer(), G
             scale = -0.1f
         else if (scale > 1.1f)
             scale = 1.1f
-        bar1.updateRadius(scale)
+        bar.updateRadius(scale)
     }
 
     private val barWidth = (end.x - start.x)
@@ -85,12 +86,12 @@ class ChartTestRenderer(private val parent: IRendererParent) : BaseRenderer(), G
 //            verScale = 2f
         val dx = (1f - horScale) * barWidth / 2f
         val dy = (1f - verScale) * barHeight / 2f
-        bar1.apply(PointF(start.x + dx, start.y + dy), PointF(end.x - dx, end.y - dy), scale, color)
+        bar.apply(PointF(start.x + dx, start.y + dy), PointF(end.x - dx, end.y - dy), scale, color)
     }
 
     fun highQuality(highQuality: Boolean = false) {
         this.highQuality = highQuality
-        bar1.refresh()
+        bar.refresh()
     }
 
     override fun getShaderCode(shaderRes: Int): String = parent.getShaderCode(shaderRes)

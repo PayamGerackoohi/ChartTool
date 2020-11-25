@@ -22,5 +22,6 @@
         </activity>
         <activity android:name=".ui.bartest.BarTestPage" />
         <activity android:name=".ui.charttest.ChartTestPage" />
+        <activity android:name=".ui.animationtest.AnimationTestPage" />
     </application>
 </manifest>

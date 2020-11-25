@@ -2,11 +2,8 @@ package com.payam1991gr.chart.tool.shape
 
 import android.graphics.PointF
 import android.opengl.GLES20
-import com.payam1991gr.chart.tool.renderer.BaseRenderer
-import com.payam1991gr.chart.tool.renderer.ChartRenderer
 import com.payam1991gr.chart.tool.renderer.IShapeParent
 import com.payam1991gr.chart.tool.util.GLColor
-import com.payam1991gr.chart.tool.util.plog
 import com.payam1991gr.chart.tool.util.toRadians
 import java.nio.FloatBuffer
 import kotlin.math.*
@@ -71,7 +68,7 @@ class Arc(private val parent: IShapeParent) : BaseShape(parent) {
 
     private fun calculateVertexCount() {
         var a = radius * precisionFactor * parent.getQualityFactor() + 4f
-//        var a = radius * precisionFactor * 33000f / BaseRenderer.displayMinDim.toFloat() + 4f
+//        var a = radius * precisionFactor * 33000f / BaseGLSurfaceRenderer.displayMinDim.toFloat() + 4f
         a *= (endDegree - startDegree) / 90f
         round(a).toInt().let {
             vertexCount = if (it < 3) 3 else it

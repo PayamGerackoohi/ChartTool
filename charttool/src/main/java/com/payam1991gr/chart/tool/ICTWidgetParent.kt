@@ -1,6 +1,7 @@
 package com.payam1991gr.chart.tool
 
 import android.graphics.Typeface
+import android.view.MotionEvent
 import com.payam1991gr.chart.tool.data.CTData
 
 interface ICTWidgetParent {
@@ -10,4 +11,5 @@ interface ICTWidgetParent {
     fun dataAt(index: Int): CTData?
     fun categoryAt(index: Int): String?
     fun seriesCount(): Int
+    fun onTouchEvent(e: MotionEvent): Boolean
 }

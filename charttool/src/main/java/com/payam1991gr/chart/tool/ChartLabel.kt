@@ -14,8 +14,9 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.ViewCompat
 import com.payam1991gr.chart.tool.util.DisplayUtils
 import com.payam1991gr.chart.tool.util.plog
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import java.util.ArrayList
 
@@ -31,6 +32,16 @@ class ChartLabel : ViewGroup {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
+
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val mainScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    private fun io(block: suspend CoroutineScope.() -> Unit) = scope.launch { block() }
+    private fun ui(block: suspend CoroutineScope.() -> Unit) = mainScope.launch {
+        try {
+            block()
+        } catch (e: Exception) {
+        }
+    }
 
     fun setLabels(holder: ICTWidgetParent, list: ArrayList<ArrayList<String>>) {
         plog()
@@ -97,14 +108,14 @@ class ChartLabel : ViewGroup {
     }
 
     fun appear() {
-        GlobalScope.launch(Dispatchers.Main) {
+        ui {
             alpha = 0f
             animate().alpha(1f).setDuration(500L).start()
         }
     }
 
     fun disappear() {
-        GlobalScope.launch(Dispatchers.Main) { alpha = 0f }
+        ui { alpha = 0f }
     }
 
     fun updateCoords(coords: List<Point?>) {

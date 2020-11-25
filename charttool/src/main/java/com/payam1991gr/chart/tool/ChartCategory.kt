@@ -5,13 +5,15 @@ import android.graphics.Typeface
 import android.os.Build
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatTextView
 import com.payam1991gr.chart.tool.util.toDegrees
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlin.math.acos
 import kotlin.math.sqrt
@@ -27,7 +29,27 @@ class ChartCategory : ViewGroup {
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int) : super(
+        context,
+        attrs,
+        defStyleAttr,
+        defStyleRes
+    )
+
+    override fun onTouchEvent(e: MotionEvent): Boolean {
+        return holder?.onTouchEvent(e) ?: false
+    }
+
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val mainScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    private fun io(block: suspend CoroutineScope.() -> Unit) = scope.launch { block() }
+
+    private fun ui(block: suspend CoroutineScope.() -> Unit) = mainScope.launch {
+        try {
+            block()
+        } catch (e: Exception) {
+        }
+    }
 
     fun setCategories(holder: ICTWidgetParent, list: List<String>) {
         this.holder = holder
@@ -114,13 +136,13 @@ class ChartCategory : ViewGroup {
     }
 
     fun appear() {
-        GlobalScope.launch(Dispatchers.Main) {
+        ui {
             alpha = 0f
             animate().alpha(1f).setDuration(1000L).start()
         }
     }
 
     fun disappear() {
-        GlobalScope.launch(Dispatchers.Main) { alpha = 0f }
+        ui { alpha = 0f }
     }
 }

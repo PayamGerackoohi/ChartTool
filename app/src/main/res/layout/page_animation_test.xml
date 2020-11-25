@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightGray">
+
+    <View
+        android:id="@+id/leftSpace"
+        android:layout_width="10dp"
+        android:layout_height="100dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/rightSpace"
+        android:layout_width="10dp"
+        android:layout_height="100dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/topSpace"
+        android:layout_width="100dp"
+        android:layout_height="10dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/bottomSpace"
+        android:layout_width="100dp"
+        android:layout_height="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <!--    <com.payam1991gr.chart.tool.glsurfacetest.ChartTestView-->
+    <!--    <View-->
+    <!--    <com.payam1991gr.chart.tool.textureviewtest.TextureViewTest-->
+    <!--        android:id="@+id/chart"-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="0dp"-->
+    <!--        android:background="@color/blue"-->
+    <!--        app:layout_constraintBottom_toTopOf="@+id/bottomSpace"-->
+    <!--        app:layout_constraintLeft_toRightOf="@+id/leftSpace"-->
+    <!--        app:layout_constraintRight_toLeftOf="@+id/rightSpace"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/topSpace" />-->
+
+    <com.payam1991gr.chart.tool.ChartView2
+        android:id="@+id/chart1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/chart1Category"
+        app:layout_constraintLeft_toRightOf="@+id/leftSpace"
+        app:layout_constraintRight_toLeftOf="@+id/rightSpace"
+        app:layout_constraintTop_toBottomOf="@+id/topSpace" />
+
+    <com.payam1991gr.chart.tool.ChartLegend
+        android:id="@+id/chart1Legend"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/bottomSpace"
+        app:layout_constraintLeft_toRightOf="@+id/leftSpace"
+        app:layout_constraintRight_toLeftOf="@+id/rightSpace" />
+
+    <com.payam1991gr.chart.tool.ChartCategory
+        android:id="@+id/chart1Category"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/chart1Legend"
+        app:layout_constraintLeft_toRightOf="@+id/leftSpace"
+        app:layout_constraintRight_toLeftOf="@+id/rightSpace" />
+
+    <com.payam1991gr.chart.tool.ChartLabel
+        android:id="@+id/chart1Label"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clickable="false"
+        android:focusable="false"
+        app:layout_constraintBottom_toBottomOf="@+id/chart1"
+        app:layout_constraintLeft_toLeftOf="@+id/chart1"
+        app:layout_constraintRight_toRightOf="@+id/chart1"
+        app:layout_constraintTop_toTopOf="@+id/chart1" />
+
+    <com.payam1991gr.chart.tool.ChartTooltip
+        android:id="@+id/chart1Tooltip"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clickable="false"
+        android:focusable="false"
+        app:layout_constraintBottom_toBottomOf="@+id/chart1"
+        app:layout_constraintLeft_toLeftOf="@+id/chart1"
+        app:layout_constraintRight_toRightOf="@+id/chart1"
+        app:layout_constraintTop_toTopOf="@+id/chart1" />
+</androidx.constraintlayout.widget.ConstraintLayout>

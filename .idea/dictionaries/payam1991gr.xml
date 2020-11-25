@@ -4,6 +4,8 @@
       <w>attrib</w>
       <w>coords</w>
       <w>gles</w>
+      <w>opengl</w>
+      <w>payam</w>
       <w>shaders</w>
     </words>
   </dictionary>
